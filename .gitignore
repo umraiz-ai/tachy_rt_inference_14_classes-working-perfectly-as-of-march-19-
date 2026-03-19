@@ -1,0 +1,10 @@
+*.tachyrt
+*.jpg
+*.png
+*.jpeg
+!./object_detection_yolo_coco-80cls/result.png
+*.tachy
+*.mp4
+*.bin
+__pycache__/
+*.pyc
