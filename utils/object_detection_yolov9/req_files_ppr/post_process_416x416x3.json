@@ -1,0 +1,29 @@
+{
+    "SHAPES_INPUT":[416,416,3],
+    "SHAPES_OUTPUT":[
+        [
+            52,
+            52,
+            18
+        ],
+        [
+            26,
+            26,
+            18
+        ],
+        [
+            13,
+            13,
+            18
+        ]
+    ],
+    "OBJ_THRESHOLD":0.25,
+    "NMS_THRESHOLD":0.2,
+    "PRE_THRESHOLD":0.0,
+    "N_CLASSES":14,
+    "N_MAX_OBJ":100,
+    "LOGIT_ORDER":"box_first",
+    "DELTA_SCALE": 4.0,
+    "MIN_BOX_SIZE": 6.0,
+    "USE_TANH": false
+}

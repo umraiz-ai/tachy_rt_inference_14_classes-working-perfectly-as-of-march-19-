@@ -1,0 +1,5109 @@
+{
+    "blocks": [
+        {
+            "bi": -1,
+            "index": 0,
+            "operation": "Scaler",
+            "input_shape": [
+                256,
+                416,
+                3
+            ],
+            "output_shape": [
+                256,
+                416,
+                3
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                3,
+                3
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": -1,
+            "output_tos": [
+                1
+            ],
+            "xwn_bit": 1,
+            "xwn_scale": 1.0,
+            "param_size": 128,
+            "is_start": true,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                3,
+                3
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 0
+        },
+        {
+            "bi": 0,
+            "index": 1,
+            "operation": "Conv",
+            "input_shape": [
+                256,
+                416,
+                3
+            ],
+            "output_shape": [
+                128,
+                208,
+                32
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                3,
+                32
+            ],
+            "stride_shape": [
+                2,
+                2
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 0,
+            "output_tos": [
+                2,
+                3
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 912,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                3,
+                3
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 128
+        },
+        {
+            "bi": 123,
+            "index": 2,
+            "operation": "Conv",
+            "input_shape": [
+                128,
+                208,
+                16
+            ],
+            "output_shape": [
+                128,
+                208,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                16,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 1,
+            "output_tos": [
+                3
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 1808,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                16,
+                32
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 1040
+        },
+        {
+            "bi": 124,
+            "index": 3,
+            "operation": "Conv",
+            "input_shape": [
+                128,
+                208,
+                16
+            ],
+            "output_shape": [
+                128,
+                208,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                16,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 2,
+            "input_from": 1,
+            "output_tos": [
+                4
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 1936,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 16,
+            "channel_idx": [
+                16,
+                32,
+                32
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 2848
+        },
+        {
+            "bi": 2,
+            "index": 4,
+            "operation": "Conv",
+            "input_shape": [
+                128,
+                208,
+                16
+            ],
+            "output_shape": [
+                128,
+                208,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                16,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 3,
+            "output_tos": [
+                5
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 2064,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                16,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4784
+        },
+        {
+            "bi": 3,
+            "index": 5,
+            "operation": "Conv",
+            "input_shape": [
+                128,
+                208,
+                16
+            ],
+            "output_shape": [
+                128,
+                208,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                16,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 4,
+            "output_tos": [
+                6
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 2064,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                16,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 6848
+        },
+        {
+            "bi": 4,
+            "index": 6,
+            "operation": "Conv",
+            "input_shape": [
+                128,
+                208,
+                16
+            ],
+            "output_shape": [
+                64,
+                104,
+                64
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                16,
+                64
+            ],
+            "stride_shape": [
+                2,
+                2
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 5,
+            "output_tos": [
+                7,
+                8
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 7440,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                16,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 8912
+        },
+        {
+            "bi": 125,
+            "index": 7,
+            "operation": "Conv",
+            "input_shape": [
+                64,
+                104,
+                32
+            ],
+            "output_shape": [
+                64,
+                104,
+                32
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                32,
+                32
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 6,
+            "output_tos": [
+                8
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 7824,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                32,
+                64
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 16352
+        },
+        {
+            "bi": 126,
+            "index": 8,
+            "operation": "Conv",
+            "input_shape": [
+                64,
+                104,
+                32
+            ],
+            "output_shape": [
+                64,
+                104,
+                32
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                32,
+                32
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 7,
+            "input_from": 6,
+            "output_tos": [
+                9,
+                10
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 7696,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 32,
+            "channel_idx": [
+                32,
+                64,
+                64
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 24176
+        },
+        {
+            "bi": 6,
+            "index": 9,
+            "operation": "Conv",
+            "input_shape": [
+                64,
+                104,
+                32
+            ],
+            "output_shape": [
+                64,
+                104,
+                32
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                32,
+                32
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 8,
+            "output_tos": [
+                10
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 7824,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                32,
+                32
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 31872
+        },
+        {
+            "bi": 7,
+            "index": 10,
+            "operation": "Conv",
+            "input_shape": [
+                64,
+                104,
+                32
+            ],
+            "output_shape": [
+                64,
+                104,
+                32
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                32,
+                32
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 8,
+            "input_from": 9,
+            "output_tos": [
+                11
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 7824,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                32,
+                32
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 39696
+        },
+        {
+            "bi": 8,
+            "index": 11,
+            "operation": "Conv",
+            "input_shape": [
+                64,
+                104,
+                32
+            ],
+            "output_shape": [
+                32,
+                52,
+                144
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                32,
+                144
+            ],
+            "stride_shape": [
+                2,
+                2
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 10,
+            "output_tos": [
+                12,
+                13
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 34320,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                32,
+                32
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 47520
+        },
+        {
+            "bi": 127,
+            "index": 12,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                72
+            ],
+            "output_shape": [
+                32,
+                52,
+                72
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                72,
+                72
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 11,
+            "output_tos": [
+                13
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 38672,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                72,
+                144
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 81840
+        },
+        {
+            "bi": 128,
+            "index": 13,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                72
+            ],
+            "output_shape": [
+                32,
+                52,
+                72
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                72,
+                72
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 12,
+            "input_from": 11,
+            "output_tos": [
+                14,
+                15
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 38800,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 72,
+            "channel_idx": [
+                72,
+                144,
+                144
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 120512
+        },
+        {
+            "bi": 10,
+            "index": 14,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                72
+            ],
+            "output_shape": [
+                32,
+                52,
+                72
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                72,
+                72
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 13,
+            "output_tos": [
+                15
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 38544,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                72,
+                72
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 159312
+        },
+        {
+            "bi": 11,
+            "index": 15,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                72
+            ],
+            "output_shape": [
+                32,
+                52,
+                72
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                72,
+                72
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 13,
+            "input_from": 14,
+            "output_tos": [
+                16,
+                17
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 38672,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                72,
+                72
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 197856
+        },
+        {
+            "bi": 12,
+            "index": 16,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                72
+            ],
+            "output_shape": [
+                32,
+                52,
+                40
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                72,
+                40
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 15,
+            "output_tos": [
+                61
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 7952,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                72,
+                72
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 236528
+        },
+        {
+            "bi": 13,
+            "index": 17,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                72
+            ],
+            "output_shape": [
+                16,
+                26,
+                224
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                72,
+                224
+            ],
+            "stride_shape": [
+                2,
+                2
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 15,
+            "output_tos": [
+                18,
+                19
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 120720,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                72,
+                72
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 244480
+        },
+        {
+            "bi": 129,
+            "index": 18,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                136
+            ],
+            "output_shape": [
+                16,
+                26,
+                112
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                136,
+                112
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 17,
+            "output_tos": [
+                19
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 113936,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                136,
+                224
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 365200
+        },
+        {
+            "bi": 130,
+            "index": 19,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                88
+            ],
+            "output_shape": [
+                16,
+                26,
+                112
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                88,
+                112
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 18,
+            "input_from": 17,
+            "output_tos": [
+                20,
+                21
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 74256,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 136,
+            "channel_idx": [
+                136,
+                224,
+                224
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 479136
+        },
+        {
+            "bi": 18,
+            "index": 20,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                112
+            ],
+            "output_shape": [
+                16,
+                26,
+                112
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                112,
+                112
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 19,
+            "output_tos": [
+                21
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 93968,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                112,
+                112
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 553392
+        },
+        {
+            "bi": 19,
+            "index": 21,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                112
+            ],
+            "output_shape": [
+                16,
+                26,
+                112
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                112,
+                112
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 19,
+            "input_from": 20,
+            "output_tos": [
+                22
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 93584,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                112,
+                112
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 647360
+        },
+        {
+            "bi": 20,
+            "index": 22,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                112
+            ],
+            "output_shape": [
+                16,
+                26,
+                192
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                112,
+                192
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 21,
+            "output_tos": [
+                23,
+                24,
+                25
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 160144,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                112,
+                112
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 740944
+        },
+        {
+            "bi": 131,
+            "index": 23,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                136
+            ],
+            "output_shape": [
+                16,
+                26,
+                192
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                136,
+                192
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 22,
+            "output_tos": [
+                24
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 195472,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                136,
+                192
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 901088
+        },
+        {
+            "bi": 132,
+            "index": 24,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                56
+            ],
+            "output_shape": [
+                16,
+                26,
+                192
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                56,
+                192
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 23,
+            "input_from": 22,
+            "output_tos": [
+                25,
+                26
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 80784,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 136,
+            "channel_idx": [
+                136,
+                192,
+                192
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 1096560
+        },
+        {
+            "bi": 133,
+            "index": 25,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                136
+            ],
+            "output_shape": [
+                16,
+                26,
+                192
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                136,
+                192
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 22,
+            "input_from": 24,
+            "output_tos": [
+                26
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 196112,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                136,
+                192
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 1177344
+        },
+        {
+            "bi": 134,
+            "index": 26,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                56
+            ],
+            "output_shape": [
+                16,
+                26,
+                192
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                56,
+                192
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 25,
+            "input_from": 24,
+            "output_tos": [
+                27,
+                28,
+                29,
+                30
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 81040,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 136,
+            "channel_idx": [
+                136,
+                192,
+                192
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 1373456
+        },
+        {
+            "bi": 135,
+            "index": 27,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                144
+            ],
+            "output_shape": [
+                16,
+                26,
+                80
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                144,
+                80
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 26,
+            "output_tos": [
+                28
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 30352,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                144,
+                192
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 1454496
+        },
+        {
+            "bi": 136,
+            "index": 28,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                48
+            ],
+            "output_shape": [
+                16,
+                26,
+                80
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                48,
+                80
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": 27,
+            "input_from": 26,
+            "output_tos": [
+                39
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 10768,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 144,
+            "channel_idx": [
+                144,
+                192,
+                192
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 1484848
+        },
+        {
+            "bi": 137,
+            "index": 29,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                136
+            ],
+            "output_shape": [
+                8,
+                13,
+                640
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                136,
+                640
+            ],
+            "stride_shape": [
+                2,
+                2
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 26,
+            "output_tos": [
+                30
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 683408,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                136,
+                192
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 1495616
+        },
+        {
+            "bi": 138,
+            "index": 30,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                56
+            ],
+            "output_shape": [
+                8,
+                13,
+                640
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                56,
+                640
+            ],
+            "stride_shape": [
+                2,
+                2
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 29,
+            "input_from": 26,
+            "output_tos": [
+                31,
+                32,
+                33
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 283152,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 136,
+            "channel_idx": [
+                136,
+                192,
+                192
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 2179024
+        },
+        {
+            "bi": 139,
+            "index": 31,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                256
+            ],
+            "output_shape": [
+                8,
+                13,
+                320
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                256,
+                320
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 30,
+            "output_tos": [
+                32
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 628880,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                256,
+                640
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 2462176
+        },
+        {
+            "bi": 140,
+            "index": 32,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                256
+            ],
+            "output_shape": [
+                8,
+                13,
+                320
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                256,
+                320
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 31,
+            "input_from": 30,
+            "output_tos": [
+                33
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 628880,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 256,
+            "channel_idx": [
+                256,
+                512,
+                640
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 3091056
+        },
+        {
+            "bi": 141,
+            "index": 33,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                128
+            ],
+            "output_shape": [
+                8,
+                13,
+                320
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                128,
+                320
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 32,
+            "input_from": 30,
+            "output_tos": [
+                34,
+                35
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 314768,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 512,
+            "channel_idx": [
+                512,
+                640,
+                640
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 3719936
+        },
+        {
+            "bi": 142,
+            "index": 34,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                288
+            ],
+            "output_shape": [
+                8,
+                13,
+                160
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                288,
+                160
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 33,
+            "output_tos": [
+                35
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 125328,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                288,
+                320
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4034704
+        },
+        {
+            "bi": 143,
+            "index": 35,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                32
+            ],
+            "output_shape": [
+                8,
+                13,
+                160
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                32,
+                160
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": 34,
+            "input_from": 33,
+            "output_tos": [
+                36,
+                37,
+                38
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 14608,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 288,
+            "channel_idx": [
+                288,
+                320,
+                320
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4160032
+        },
+        {
+            "bi": 30,
+            "index": 36,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                160
+            ],
+            "output_shape": [
+                8,
+                13,
+                160
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                160,
+                160
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 35,
+            "output_tos": [
+                41,
+                42
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 198928,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                160,
+                160
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4174640
+        },
+        {
+            "bi": 144,
+            "index": 37,
+            "operation": "TransposeConv",
+            "input_shape": [
+                8,
+                13,
+                136
+            ],
+            "output_shape": [
+                16,
+                26,
+                80
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                136,
+                80
+            ],
+            "stride_shape": [
+                2,
+                2
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 35,
+            "output_tos": [
+                38
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 87440,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                136,
+                160
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4373568
+        },
+        {
+            "bi": 145,
+            "index": 38,
+            "operation": "TransposeConv",
+            "input_shape": [
+                8,
+                13,
+                24
+            ],
+            "output_shape": [
+                16,
+                26,
+                80
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                24,
+                80
+            ],
+            "stride_shape": [
+                2,
+                2
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 37,
+            "input_from": 35,
+            "output_tos": [
+                40
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 15760,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 136,
+            "channel_idx": [
+                136,
+                160,
+                160
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4461008
+        },
+        {
+            "bi": 89,
+            "index": 39,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                80
+            ],
+            "output_shape": [
+                16,
+                26,
+                160
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                80,
+                160
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 28,
+            "output_tos": [
+                40
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 1680,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                80,
+                80
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4476768
+        },
+        {
+            "bi": 90,
+            "index": 40,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                80
+            ],
+            "output_shape": [
+                16,
+                26,
+                160
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                80,
+                160
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": 39,
+            "input_from": 38,
+            "output_tos": [
+                43,
+                44
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 1680,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                80,
+                80
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4478448
+        },
+        {
+            "bi": 36,
+            "index": 41,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                160
+            ],
+            "output_shape": [
+                8,
+                13,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                160,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 36,
+            "output_tos": [
+                45,
+                46,
+                47,
+                48
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 17552,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                160,
+                160
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4480128
+        },
+        {
+            "bi": 37,
+            "index": 42,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                160
+            ],
+            "output_shape": [
+                8,
+                13,
+                40
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                160,
+                40
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 36,
+            "output_tos": [
+                50
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 48400,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                160,
+                160
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4497680
+        },
+        {
+            "bi": 146,
+            "index": 43,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                136
+            ],
+            "output_shape": [
+                16,
+                26,
+                80
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                136,
+                80
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 40,
+            "output_tos": [
+                44
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 77200,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                136,
+                160
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4546080
+        },
+        {
+            "bi": 147,
+            "index": 44,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                24
+            ],
+            "output_shape": [
+                16,
+                26,
+                80
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                24,
+                80
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 43,
+            "input_from": 40,
+            "output_tos": [
+                51,
+                52,
+                53,
+                54
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 13328,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 136,
+            "channel_idx": [
+                136,
+                160,
+                160
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4623280
+        },
+        {
+            "bi": 93,
+            "index": 45,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                4
+            ],
+            "output_shape": [
+                8,
+                13,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                4,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 41,
+            "output_tos": [
+                46
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 400,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                4,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4636608
+        },
+        {
+            "bi": 94,
+            "index": 46,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                4
+            ],
+            "output_shape": [
+                8,
+                13,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                4,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 45,
+            "input_from": 41,
+            "output_tos": [
+                47
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 400,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 4,
+            "channel_idx": [
+                4,
+                8,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4637008
+        },
+        {
+            "bi": 95,
+            "index": 47,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                4
+            ],
+            "output_shape": [
+                8,
+                13,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                4,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 46,
+            "input_from": 41,
+            "output_tos": [
+                48
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 400,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 8,
+            "channel_idx": [
+                8,
+                12,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4637408
+        },
+        {
+            "bi": 96,
+            "index": 48,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                4
+            ],
+            "output_shape": [
+                8,
+                13,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                4,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 47,
+            "input_from": 41,
+            "output_tos": [
+                49
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 400,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 12,
+            "channel_idx": [
+                12,
+                16,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4637808
+        },
+        {
+            "bi": 97,
+            "index": 49,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                16
+            ],
+            "output_shape": [
+                8,
+                13,
+                16
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                16,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 48,
+            "output_tos": [
+                83,
+                84,
+                85,
+                86
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 272,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                16,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4638208
+        },
+        {
+            "bi": 44,
+            "index": 50,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                40
+            ],
+            "output_shape": [
+                8,
+                13,
+                40
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                40,
+                40
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 42,
+            "output_tos": [
+                90
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 12688,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                40,
+                40
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4638480
+        },
+        {
+            "bi": 148,
+            "index": 51,
+            "operation": "TransposeConv",
+            "input_shape": [
+                16,
+                26,
+                72
+            ],
+            "output_shape": [
+                32,
+                52,
+                40
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                72,
+                40
+            ],
+            "stride_shape": [
+                2,
+                2
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 44,
+            "output_tos": [
+                52
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 23312,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                72,
+                80
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4651168
+        },
+        {
+            "bi": 149,
+            "index": 52,
+            "operation": "TransposeConv",
+            "input_shape": [
+                16,
+                26,
+                8
+            ],
+            "output_shape": [
+                32,
+                52,
+                40
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                8,
+                40
+            ],
+            "stride_shape": [
+                2,
+                2
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 51,
+            "input_from": 44,
+            "output_tos": [
+                62
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 2832,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 72,
+            "channel_idx": [
+                72,
+                80,
+                80
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4674480
+        },
+        {
+            "bi": 48,
+            "index": 53,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                80
+            ],
+            "output_shape": [
+                16,
+                26,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                80,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 44,
+            "output_tos": [
+                56,
+                57,
+                58,
+                59
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 7824,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                80,
+                80
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4677312
+        },
+        {
+            "bi": 49,
+            "index": 54,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                80
+            ],
+            "output_shape": [
+                16,
+                26,
+                40
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                80,
+                40
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 44,
+            "output_tos": [
+                55
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 23056,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                80,
+                80
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4685136
+        },
+        {
+            "bi": 60,
+            "index": 55,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                40
+            ],
+            "output_shape": [
+                16,
+                26,
+                40
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                40,
+                40
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 54,
+            "output_tos": [
+                89
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 12048,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                40,
+                40
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4708192
+        },
+        {
+            "bi": 98,
+            "index": 56,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                4
+            ],
+            "output_shape": [
+                16,
+                26,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                4,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 53,
+            "output_tos": [
+                57
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 400,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                4,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4720240
+        },
+        {
+            "bi": 99,
+            "index": 57,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                4
+            ],
+            "output_shape": [
+                16,
+                26,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                4,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 56,
+            "input_from": 53,
+            "output_tos": [
+                58
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 400,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 4,
+            "channel_idx": [
+                4,
+                8,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4720640
+        },
+        {
+            "bi": 100,
+            "index": 58,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                4
+            ],
+            "output_shape": [
+                16,
+                26,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                4,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 57,
+            "input_from": 53,
+            "output_tos": [
+                59
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 400,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 8,
+            "channel_idx": [
+                8,
+                12,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4721040
+        },
+        {
+            "bi": 101,
+            "index": 59,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                4
+            ],
+            "output_shape": [
+                16,
+                26,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                4,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 58,
+            "input_from": 53,
+            "output_tos": [
+                60
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 400,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 12,
+            "channel_idx": [
+                12,
+                16,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4721440
+        },
+        {
+            "bi": 102,
+            "index": 60,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                16
+            ],
+            "output_shape": [
+                16,
+                26,
+                16
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                16,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 59,
+            "output_tos": [
+                78,
+                79,
+                80,
+                81
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 272,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                16,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4721840
+        },
+        {
+            "bi": 91,
+            "index": 61,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                40
+            ],
+            "output_shape": [
+                32,
+                52,
+                80
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                40,
+                80
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 16,
+            "output_tos": [
+                62
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 912,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                40,
+                40
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4722112
+        },
+        {
+            "bi": 92,
+            "index": 62,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                40
+            ],
+            "output_shape": [
+                32,
+                52,
+                80
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                40,
+                80
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": 61,
+            "input_from": 52,
+            "output_tos": [
+                63,
+                64
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 912,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                40,
+                40
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4723024
+        },
+        {
+            "bi": 150,
+            "index": 63,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                72
+            ],
+            "output_shape": [
+                32,
+                52,
+                40
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                72,
+                40
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 62,
+            "output_tos": [
+                64
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 20240,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                72,
+                80
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4723936
+        },
+        {
+            "bi": 151,
+            "index": 64,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                8
+            ],
+            "output_shape": [
+                32,
+                52,
+                40
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                8,
+                40
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 63,
+            "input_from": 62,
+            "output_tos": [
+                65,
+                66
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 2320,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 72,
+            "channel_idx": [
+                72,
+                80,
+                80
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4744176
+        },
+        {
+            "bi": 71,
+            "index": 65,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                40
+            ],
+            "output_shape": [
+                32,
+                52,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                40,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 64,
+            "output_tos": [
+                68,
+                69,
+                70,
+                71
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 4240,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                40,
+                40
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4746496
+        },
+        {
+            "bi": 72,
+            "index": 66,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                40
+            ],
+            "output_shape": [
+                32,
+                52,
+                40
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                40,
+                40
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 64,
+            "output_tos": [
+                67
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 11920,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                40,
+                40
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4750736
+        },
+        {
+            "bi": 76,
+            "index": 67,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                40
+            ],
+            "output_shape": [
+                32,
+                52,
+                40
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                40,
+                40
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 66,
+            "output_tos": [
+                88
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 11920,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                40,
+                40
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4762656
+        },
+        {
+            "bi": 103,
+            "index": 68,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                4
+            ],
+            "output_shape": [
+                32,
+                52,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                4,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 65,
+            "output_tos": [
+                69
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 400,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                4,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4774576
+        },
+        {
+            "bi": 104,
+            "index": 69,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                4
+            ],
+            "output_shape": [
+                32,
+                52,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                4,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 68,
+            "input_from": 65,
+            "output_tos": [
+                70
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 400,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 4,
+            "channel_idx": [
+                4,
+                8,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4774976
+        },
+        {
+            "bi": 105,
+            "index": 70,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                4
+            ],
+            "output_shape": [
+                32,
+                52,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                4,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 69,
+            "input_from": 65,
+            "output_tos": [
+                71
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 400,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 8,
+            "channel_idx": [
+                8,
+                12,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4775376
+        },
+        {
+            "bi": 106,
+            "index": 71,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                4
+            ],
+            "output_shape": [
+                32,
+                52,
+                16
+            ],
+            "kernel_shape": [
+                3,
+                3,
+                4,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "residual_with": 70,
+            "input_from": 65,
+            "output_tos": [
+                72
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 400,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 12,
+            "channel_idx": [
+                12,
+                16,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": null,
+            "param_offset": 4775776
+        },
+        {
+            "bi": 107,
+            "index": 72,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                16
+            ],
+            "output_shape": [
+                32,
+                52,
+                16
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                16,
+                16
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 71,
+            "output_tos": [
+                73,
+                74,
+                75,
+                76
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 272,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                16,
+                16
+            ],
+            "channel_residual": [
+                0,
+                0
+            ],
+            "activation": {
+                "name": "LeakyRelu"
+            },
+            "param_offset": 4776176
+        },
+        {
+            "bi": 108,
+            "index": 73,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                4
+            ],
+            "output_shape": [
+                32,
+                52,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                4,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 72,
+            "output_tos": [
+                74
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                4,
+                16
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4776448
+        },
+        {
+            "bi": 109,
+            "index": 74,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                4
+            ],
+            "output_shape": [
+                32,
+                52,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                4,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": 73,
+            "input_from": 72,
+            "output_tos": [
+                75
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 4,
+            "channel_idx": [
+                4,
+                8,
+                16
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4776592
+        },
+        {
+            "bi": 110,
+            "index": 75,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                4
+            ],
+            "output_shape": [
+                32,
+                52,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                4,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": 74,
+            "input_from": 72,
+            "output_tos": [
+                76
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 8,
+            "channel_idx": [
+                8,
+                12,
+                16
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4776736
+        },
+        {
+            "bi": 111,
+            "index": 76,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                4
+            ],
+            "output_shape": [
+                32,
+                52,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                4,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": 75,
+            "input_from": 72,
+            "output_tos": [
+                77
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 12,
+            "channel_idx": [
+                12,
+                16,
+                16
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4776880
+        },
+        {
+            "bi": 112,
+            "index": 77,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                8
+            ],
+            "output_shape": [
+                32,
+                52,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                8,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 76,
+            "output_tos": [],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": true,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                8,
+                8
+            ],
+            "channel_residual": [
+                4,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4777024
+        },
+        {
+            "bi": 113,
+            "index": 78,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                4
+            ],
+            "output_shape": [
+                16,
+                26,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                4,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 60,
+            "output_tos": [
+                79
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                4,
+                16
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4777168
+        },
+        {
+            "bi": 114,
+            "index": 79,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                4
+            ],
+            "output_shape": [
+                16,
+                26,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                4,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": 78,
+            "input_from": 60,
+            "output_tos": [
+                80
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 4,
+            "channel_idx": [
+                4,
+                8,
+                16
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4777312
+        },
+        {
+            "bi": 115,
+            "index": 80,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                4
+            ],
+            "output_shape": [
+                16,
+                26,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                4,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": 79,
+            "input_from": 60,
+            "output_tos": [
+                81
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 8,
+            "channel_idx": [
+                8,
+                12,
+                16
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4777456
+        },
+        {
+            "bi": 116,
+            "index": 81,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                4
+            ],
+            "output_shape": [
+                16,
+                26,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                4,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": 80,
+            "input_from": 60,
+            "output_tos": [
+                82
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 12,
+            "channel_idx": [
+                12,
+                16,
+                16
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4777600
+        },
+        {
+            "bi": 117,
+            "index": 82,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                8
+            ],
+            "output_shape": [
+                16,
+                26,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                8,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 81,
+            "output_tos": [],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": true,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                8,
+                8
+            ],
+            "channel_residual": [
+                4,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4777744
+        },
+        {
+            "bi": 118,
+            "index": 83,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                4
+            ],
+            "output_shape": [
+                8,
+                13,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                4,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 49,
+            "output_tos": [
+                84
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                4,
+                16
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4777888
+        },
+        {
+            "bi": 119,
+            "index": 84,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                4
+            ],
+            "output_shape": [
+                8,
+                13,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                4,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": 83,
+            "input_from": 49,
+            "output_tos": [
+                85
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 4,
+            "channel_idx": [
+                4,
+                8,
+                16
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4778032
+        },
+        {
+            "bi": 120,
+            "index": 85,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                4
+            ],
+            "output_shape": [
+                8,
+                13,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                4,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": 84,
+            "input_from": 49,
+            "output_tos": [
+                86
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 8,
+            "channel_idx": [
+                8,
+                12,
+                16
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4778176
+        },
+        {
+            "bi": 121,
+            "index": 86,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                4
+            ],
+            "output_shape": [
+                8,
+                13,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                4,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": 85,
+            "input_from": 49,
+            "output_tos": [
+                87
+            ],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": false,
+            "first_depth": 12,
+            "channel_idx": [
+                12,
+                16,
+                16
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4778320
+        },
+        {
+            "bi": 122,
+            "index": 87,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                8
+            ],
+            "output_shape": [
+                8,
+                13,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                8,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 86,
+            "output_tos": [],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 144,
+            "is_start": false,
+            "is_logit": true,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                8,
+                8
+            ],
+            "channel_residual": [
+                4,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4778464
+        },
+        {
+            "bi": 82,
+            "index": 88,
+            "operation": "Conv",
+            "input_shape": [
+                32,
+                52,
+                40
+            ],
+            "output_shape": [
+                32,
+                52,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                40,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 67,
+            "output_tos": [],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 784,
+            "is_start": false,
+            "is_logit": true,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                40,
+                40
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4778608
+        },
+        {
+            "bi": 69,
+            "index": 89,
+            "operation": "Conv",
+            "input_shape": [
+                16,
+                26,
+                40
+            ],
+            "output_shape": [
+                16,
+                26,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                40,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 55,
+            "output_tos": [],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 784,
+            "is_start": false,
+            "is_logit": true,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                40,
+                40
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4779392
+        },
+        {
+            "bi": 56,
+            "index": 90,
+            "operation": "Conv",
+            "input_shape": [
+                8,
+                13,
+                40
+            ],
+            "output_shape": [
+                8,
+                13,
+                8
+            ],
+            "kernel_shape": [
+                1,
+                1,
+                40,
+                4
+            ],
+            "stride_shape": [
+                1,
+                1
+            ],
+            "padding_shape": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "residual_with": null,
+            "input_from": 50,
+            "output_tos": [],
+            "xwn_bit": 4,
+            "xwn_scale": 4.0,
+            "param_size": 784,
+            "is_start": false,
+            "is_logit": true,
+            "first_depth": 0,
+            "channel_idx": [
+                0,
+                40,
+                40
+            ],
+            "channel_residual": [
+                0,
+                4
+            ],
+            "activation": null,
+            "param_offset": 4780176
+        }
+    ],
+    "n_block": 91,
+    "use_scaler": [
+        true
+    ],
+    "input_format": [
+        "image"
+    ],
+    "input_block": [
+        0
+    ],
+    "input_shape": [
+        [
+            256,
+            416,
+            3
+        ]
+    ],
+    "output_block": [
+        77,
+        82,
+        87,
+        88,
+        89,
+        90
+    ],
+    "output_shape": [
+        [
+            32,
+            52,
+            8,
+            4
+        ],
+        [
+            16,
+            26,
+            8,
+            4
+        ],
+        [
+            8,
+            13,
+            8,
+            4
+        ],
+        [
+            32,
+            52,
+            8,
+            4
+        ],
+        [
+            16,
+            26,
+            8,
+            4
+        ],
+        [
+            8,
+            13,
+            8,
+            4
+        ]
+    ],
+    "mode_gap": "serial",
+    "multiple": 8,
+    "pad_order": "up_left",
+    "pad_mode": "fixed",
+    "logit_order": [
+        5,
+        3,
+        0,
+        4,
+        2,
+        1
+    ],
+    "use_input_inv": false,
+    "use_opt_precision": false
+}

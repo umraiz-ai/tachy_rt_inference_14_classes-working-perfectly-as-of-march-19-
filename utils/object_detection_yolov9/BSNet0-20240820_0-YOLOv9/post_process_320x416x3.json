@@ -1,0 +1,24 @@
+{
+    "SHAPES_INPUT":[320,416,3],
+    "SHAPES_OUTPUT":[
+        [
+            40,
+            52,
+            84
+        ],
+        [
+            20,
+            26,
+            84
+        ],
+        [
+            10,
+            13,
+            84
+        ]
+    ],
+    "OBJ_THRESHOLD":0.25,
+    "NMS_THRESHOLD":0.20,
+    "N_CLASSES":80,
+    "N_MAX_OBJ":30
+}
