@@ -1,0 +1,13 @@
+{
+    "mAP": 0.6773923790273642,
+    "mean_IoU": 0.8355166126340094,
+    "ap_per_class": {
+        "ladder_with_outriggers": 0.9130677772457427,
+        "dder_without_outriggers": 0.8443385844818754,
+        "worker_with_helmet": 0.613119741489424,
+        "worker_without_helmet": 0.3390434128924148
+    },
+    "iou_threshold": 0.5,
+    "conf_threshold": 0.25,
+    "fps": 1.1265046476914296
+}

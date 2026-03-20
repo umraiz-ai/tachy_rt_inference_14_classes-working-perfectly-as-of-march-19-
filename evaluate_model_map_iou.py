@@ -46,6 +46,15 @@ def parse_arguments():
     
     parser.add_argument('--iou_threshold', type=float, default=0.5,
                         help='IoU threshold for considering a detection as true positive')
+
+    parser.add_argument('--upload_firmware', type=str, default='false',
+                        help='Upload firmware when using spi interface (true/false)')
+
+    parser.add_argument('--path_firmware', type=str, default='./firmware/tachy-shield',
+                        help='Firmware directory path for tachy_rt 3.2.2 boot()')
+
+    parser.add_argument('--post_process_module', type=str, default=None,
+                        help='Explicit path to post_process.py (optional)')
     
     args = parser.parse_args()
     
@@ -57,6 +66,7 @@ def parse_arguments():
     
     args.interface = ENVS["TACHY_INTERFACE"]
     args.h, args.w = list(map(int, args.input_shape.split('x')[:2]))
+    args.upload_firmware = True if args.upload_firmware.lower() == 'true' else False
     
     # Get class dictionary
     try:
@@ -72,20 +82,55 @@ def parse_arguments():
     
     return args
 
-def boot(args):
-    if 'spi' not in args.interface:
-        return
+def _build_boot_data(path_firmware: str):
+    spl = os.path.join(path_firmware, "spl.bin")
+    uboot = os.path.join(path_firmware, "u-boot.bin")
+    if not os.path.exists(uboot):
+        alt = os.path.join(path_firmware, "uboot.bin")
+        if os.path.exists(alt):
+            uboot = alt
 
-    # Upload firmware to device
+    kernel = os.path.join(path_firmware, "image.ub")
+
+    fpga = os.path.join(path_firmware, "fpga_top.bin")
+    if not os.path.exists(fpga):
+        alt = os.path.join(path_firmware, "fpga.bin")
+        if os.path.exists(alt):
+            fpga = alt
+
+    required = [spl, uboot, kernel, fpga]
+    missing = [p for p in required if not os.path.exists(p)]
+    if missing:
+        print("Missing firmware files for tachy_rt 3.2.2 boot():")
+        for m in missing:
+            print(" -", m)
+        return None
+
+    return {
+        "spl": {"path": spl, "addr": "0x0"},
+        "uboot": {"path": uboot, "addr": "0x2000_0000"},
+        "kernel": {"path": kernel, "addr": "0x4000_0000"},
+        "fpga": {"path": fpga, "addr": "0x3000_0000"},
+    }
+
+def boot(args):
+    if 'spi' not in args.interface or not args.upload_firmware:
+        return True
+
+    # Upload firmware to device (tachy_rt 3.2.2 API)
     spi_type = args.interface.split(":")[-1]
-    firmware_path = './firmware/tachy-shield'  # Default firmware path
-    ret = rt_core.boot(path=firmware_path, spi_type=spi_type)
+    data = _build_boot_data(args.path_firmware)
+    if data is None:
+        return False
+
+    ret = rt_core.boot(spi_type, rt_core.DEV_TACHY_SHIELD, data)
     if ret:
         print("Success to boot. Check the status via uart or other api")
-    else:
-        print("Failed to boot")
-        print("Error code :", rt_core.get_last_error_code())
-        exit(-1)
+        return True
+
+    print("Failed to boot")
+    print("Error code :", rt_core.get_last_error_code())
+    return False
 
 def save_model(args):
     # Upload model
@@ -93,6 +138,17 @@ def save_model(args):
     return ret
 
 def make_instance(args):
+    # Clean stale instance (ignore errors)
+    args.instance_name = f"{args.model_name}_inst"
+    try:
+        rt_core.deinit_instance(args.interface, args.instance_name)
+    except Exception:
+        pass
+    try:
+        rt_core.deinit_instance(args.interface, args.model_name)
+    except Exception:
+        pass
+
     # Make runtime config
     args.config = {
         "global": {
@@ -114,38 +170,70 @@ def make_instance(args):
         }
     }
 
-    # Make engine
-    ret = rt_core.make_instance(args.interface, args.model_name, args.model_name, "frame_split", args.config)
-    return ret
+    # Make engine (try both tokens used by different package variants)
+    for algo in ("frame_spliter", "frame_splitter"):
+        ret = rt_core.make_instance(
+            args.interface,
+            args.model_name,
+            args.instance_name,
+            algo,
+            args.config
+        )
+        if ret:
+            print(f"make_instance success with algorithm: {algo}")
+            return True
+
+    print("make_instance fail")
+    print("Error :", rt_core.get_last_error_code())
+    return False
 
 def connect_instance(args):
     # Connect instance
-    ret, args.instance = rt_core.connect_instance(args.interface, args.model_name)
+    ret, args.instance = rt_core.connect_instance(args.interface, args.instance_name)
     if not ret:
         print("Connect instance fail")
         print("Error :", rt_core.get_last_error_code())
-        exit()
+        return False
     return ret
 
 def load_post_processor(args):
-    # Find post-processing config
-    post_config_paths = glob.glob(f'/home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/post_process_256x416x3.json', recursive=True)
+    # Prefer post-process artifacts near the model file, fallback to utils glob.
+    model_dir = os.path.dirname(os.path.abspath(args.model))
+    shape_cfg = f"post_process_{args.h}x{args.w}x3.json"
+    post_config_paths = []
+    if os.path.isdir(model_dir):
+        post_config_paths.extend(glob.glob(os.path.join(model_dir, shape_cfg)))
+        post_config_paths.extend(glob.glob(os.path.join(model_dir, "post_process*.json")))
+
     if not post_config_paths:
-        post_config_paths = glob.glob(f'./utils/**/post_process*.json', recursive=True)
-    
+        post_config_paths = glob.glob('./utils/**/post_process*.json', recursive=True)
+
     if not post_config_paths:
         print("Cannot find post-processing config. Please specify the correct path.")
         exit(-1)
-    
+
     args.post_config = read_json(post_config_paths[0])
     print(f"Using post-processing config: {post_config_paths[0]}")
-    
-    # Find post-processing module
-    post_module_paths = glob.glob('/home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/post_process.py', recursive=True)
+
+    # Find post-processing module:
+    # 1) explicit CLI path (if provided), 2) near config, 3) fallback glob.
+    post_module_paths = []
+    if args.post_process_module:
+        if os.path.isfile(args.post_process_module):
+            post_module_paths = [args.post_process_module]
+        else:
+            print(f"Provided --post_process_module not found: {args.post_process_module}")
+            exit(-1)
+    else:
+        cfg_dir = os.path.dirname(post_config_paths[0])
+        post_module_paths = glob.glob(os.path.join(cfg_dir, 'post_process.py'))
+        if not post_module_paths:
+            post_module_paths = glob.glob('./utils/**/post_process.py', recursive=True)
+
     if not post_module_paths:
         print("Cannot find post-processing module. Please specify the correct path.")
         exit(-1)
-    
+
     post_module_dir = os.path.dirname(post_module_paths[0])
     sys.path.append(post_module_dir)
     args.post = __import__('post_process').Decoder(args.post_config)
@@ -445,18 +533,24 @@ def main():
     args = parse_arguments()
     
     # Boot device (if needed)
-    boot(args)
+    if not boot(args):
+        exit(-1)
     
     # Save model to device
-    save_model(args)
+    if not save_model(args):
+        print("save_model fail")
+        print("Error :", rt_core.get_last_error_code())
+        exit(-1)
     print("Model saved successfully")
     
     # Make instance for inference
-    make_instance(args)
+    if not make_instance(args):
+        exit(-1)
     print("Instance created successfully")
     
     # Connect to instance for inference
-    connect_instance(args)
+    if not connect_instance(args):
+        exit(-1)
     print("Instance connected successfully")
     
     # Load post-processor
@@ -467,7 +561,7 @@ def main():
     evaluate(args)
     
     # Cleanup
-    rt_core.deinit_instance(args.interface, args.model_name)
+    rt_core.deinit_instance(args.interface, args.instance_name)
 
 if __name__ == '__main__':
     main()
