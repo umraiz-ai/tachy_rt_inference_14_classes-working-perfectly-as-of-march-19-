@@ -269,7 +269,10 @@ def calculate_iou(box1, box2):
 
 def evaluate(args):
     # Get all test images
-    image_files = sorted(glob.glob(os.path.join(args.test_dir, 'images', '*.jpg')))
+    image_files = []
+    for ext in ('*.jpg', '*.jpeg', '*.png'):
+        image_files.extend(glob.glob(os.path.join(args.test_dir, 'images', ext)))
+    image_files = sorted(image_files)
     num_images = len(image_files)
     
     if num_images == 0:
@@ -290,7 +293,7 @@ def evaluate(args):
         image_name = os.path.basename(image_file).rsplit('.', 1)[0]
         
         # Load corresponding label file
-        label_file = os.path.join(args.test_dir, 'labels', os.path.basename(image_file).replace('.jpg', '.txt'))
+        label_file = os.path.join(args.test_dir, 'labels', os.path.splitext(os.path.basename(image_file))[0] + '.txt')
         
         # Read ground truth boxes
         gt_boxes = []
@@ -341,20 +344,20 @@ def evaluate(args):
         # Run post-processing
         detected_boxes = args.post.main(args.ret['buf'].view(np.float32), np.array([[0, 0, args.w-1, args.h-1]], dtype=np.float32))
         
-        # Convert detected boxes to our format
+        # Convert detected boxes to our format (no confidence gate here;
+        # post_process already applies OBJ_THRESHOLD and standard mAP
+        # needs all surviving detections ranked by confidence)
         detections = []
         for box in detected_boxes:
             if len(box) >= 6:
                 confidence = float(box[0])
                 class_id = int(box[1])
                 x1, y1, x2, y2 = map(float, box[2:6])
-                
-                if confidence >= args.conf_threshold:
-                    detections.append({
-                        'class_id': class_id,
-                        'confidence': confidence,
-                        'box': [x1, y1, x2, y2]
-                    })
+                detections.append({
+                    'class_id': class_id,
+                    'confidence': confidence,
+                    'box': [x1, y1, x2, y2]
+                })
         
         all_detections.append(detections)
     
@@ -373,7 +376,8 @@ def evaluate(args):
     # Initialize AP storage
     ap_per_class = {}
     all_ious = []
-    
+    pr_curves = {}
+
     # For each class
     for class_id in all_classes:
         # Extract all detections and ground truths for this class
@@ -471,9 +475,10 @@ def evaluate(args):
         for i in i_list:
             ap += ((mrec[i] - mrec[i-1]) * mpre[i])
         
-        # Store AP for this class
+        # Store AP and PR curve for this class
         class_name = args.clss_dict.get(str(class_id), f"Class_{class_id}")
         ap_per_class[class_name] = ap
+        pr_curves[class_name] = (mrec.copy(), mpre.copy())
     
     # Calculate mean AP across all classes
     mean_ap = np.mean(list(ap_per_class.values())) if ap_per_class else 0
@@ -491,12 +496,15 @@ def evaluate(args):
     for class_name, ap in ap_per_class.items():
         print(f"  - {class_name}: {ap:.4f}")
     
-    # Create precision-recall curve
+    # Create precision-recall curves (one per class)
     plt.figure(figsize=(10, 7))
-    plt.plot(mrec[:-1], mpre[:-1], 'b-')
+    for class_name, (rec, pre) in pr_curves.items():
+        ap_val = ap_per_class[class_name]
+        plt.plot(rec[:-1], pre[:-1], label=f'{class_name} (AP={ap_val:.3f})')
     plt.xlabel('Recall')
     plt.ylabel('Precision')
-    plt.title(f'Precision-Recall Curve (mAP: {mean_ap:.4f})')
+    plt.title(f'Precision-Recall Curves (mAP@{args.iou_threshold}: {mean_ap:.4f})')
+    plt.legend()
     plt.grid(True)
     plt.savefig('precision_recall_curve.png')
     
