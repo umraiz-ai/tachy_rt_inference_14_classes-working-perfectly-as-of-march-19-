@@ -1,12 +1,15 @@
 #coding:utf-8
 
 """
-Title: Object Detection YOLOv9, Postprocess and Methods(Encoder, Decoder)
-Author: [Myungkyum Kim](dean@deeper-i.com)
-Model: objcet_detection_yolov9
-Description: Utilities for Yolov9 Decode
-History:
-    2024/08/21: init
+Title: Object Detection YOLOv9, Postprocess with Per-Class NMS
+Based on: post_process.py by [Myungkyum Kim](dean@deeper-i.com)
+Model: object_detection_yolov9
+Description: Drop-in replacement for post_process.py that uses per-class NMS
+             (matching GPU/PyTorch torchvision.ops.batched_nms behavior)
+             instead of class-agnostic NMS.
+
+Usage: pass this file as --post_process_module instead of post_process.py.
+       The JSON config is identical — no extra keys needed.
 """
 
 
@@ -17,7 +20,7 @@ import numpy as np
 import cv2
 
 from operations import sigmoid, py_nms, convert_to_xywh
-# from cython_operations import nms_v2
+
 
 #############
 #### Methods
@@ -67,7 +70,6 @@ class Encoder:
 
 class Decoder:
     def __init__(self, configs=None):
-        # Hyper-parameters
         grid_sizes = np.asarray(configs['SHAPES_GRID'], dtype='float32') if 'SHAPES_GRID' in configs else np.array([
             [8,8],
             [16,16],
@@ -119,15 +121,29 @@ class Decoder:
         prob = np.max(x, axis=-1)[..., None]
         return idx, prob
 
+    def _per_class_nms(self, obj_pred, box_pred, cls_idx):
+        """Run NMS independently within each class, then merge survivors."""
+        keep = np.zeros(len(obj_pred), dtype='bool')
+        class_ids = cls_idx[:, 0].astype(np.int32)
+
+        for cid in np.unique(class_ids):
+            cls_mask = (class_ids == cid)
+            cls_keep = py_nms(
+                obj_pred[cls_mask], box_pred[cls_mask], self.iou_threshold
+            )
+            idxs = np.where(cls_mask)[0]
+            keep[idxs[cls_keep]] = True
+
+        return keep
+
     def main(self, logits, reference):
         '''
         logits = ((N,4), (N,80))
         '''
-        # Scaling Factor
         outputs = np.array([], dtype='float32')
         n_batch = len(reference)
-        scale_ratio = np.repeat(self.get_scale_ratio(reference), self.n_grid, axis=0) # (B,2) -> (B*G,2)
-        pre_bases = np.repeat(reference[..., :2], self.n_grid, axis=0)                # (B,2) -> (B*G,2)
+        scale_ratio = np.repeat(self.get_scale_ratio(reference), self.n_grid, axis=0)
+        pre_bases = np.repeat(reference[..., :2], self.n_grid, axis=0)
         box_pred, cls_pred = self.split_logits(logits, self.n_grid)
         cls_idx, obj_pred = self.get_object_prob(cls_pred)
 
@@ -141,15 +157,14 @@ class Decoder:
             grid_bases = self.grid_bases[:n_batch * self.n_grid, ...][mask]
             grid_sizes = self.grid_sizes[:n_batch * self.n_grid, ...][mask]
             
-            # Decode
             box_pred = self.decode_box(
                 box_pred,
                 scale_ratio, pre_bases,
                 grid_bases, grid_sizes,
             )
 
-            # Masking NMS
-            mask = py_nms(obj_pred, box_pred, self.iou_threshold)
+            # Per-class NMS (matches GPU/PyTorch torchvision.ops.batched_nms)
+            mask = self._per_class_nms(obj_pred, box_pred, cls_idx)
             if np.any(mask):
                 obj_pred = obj_pred[mask]
                 box_pred = box_pred[mask]

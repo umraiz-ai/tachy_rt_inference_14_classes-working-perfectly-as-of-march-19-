@@ -1,24 +1,6 @@
 {
-<<<<<<< HEAD
     "0": "ladder_with_outriggers",
-    "1": "ladder_without_outriggers",
+    "1": "dder_without_outriggers",
     "2": "worker_with_helmet",
     "3": "worker_without_helmet"
-=======
-    "0": "cement_truck",
-    "1": "compactor",
-    "2": "dump_truck",
-    "3": "excavator",
-    "4": "grader",
-    "5": "mobile_crane",
-    "6": "tower_crane",
-    "7": "Crane_Hook",
-    "8": "worker",
-    "9": "Hardhat",
-    "10": "Red_Hardhat",
-    "11": "scaffolds",
-    "12": "Lifted Load",
-    "13": "Hook"
->>>>>>> temp-fix
 }
-
