@@ -446,10 +446,31 @@ def evaluate(args):
 
             ap, mrec, mpre = compute_ap(recalls, precisions)
 
+            # F1 score at every operating point; track the best
+            f1_scores = np.where(
+                (precisions + recalls) > 0,
+                2 * precisions * recalls / (precisions + recalls),
+                0.0,
+            )
+            if len(f1_scores) > 0:
+                best_f1_idx = int(np.argmax(f1_scores))
+                best_f1 = float(f1_scores[best_f1_idx])
+                best_f1_conf = float(cls_dets[best_f1_idx][1])
+                best_f1_prec = float(precisions[best_f1_idx])
+                best_f1_rec = float(recalls[best_f1_idx])
+            else:
+                best_f1 = best_f1_conf = best_f1_prec = best_f1_rec = 0.0
+
             cls_name = args.clss_dict.get(str(cls_id), f"class_{cls_id}")
-            ap_per_class[cls_name] = {"ap": ap, "n_gt": n_gt,
-                                      "n_det": len(cls_dets),
-                                      "n_tp": int(cum_tp[-1]) if len(cum_tp) else 0}
+            ap_per_class[cls_name] = {
+                "ap": ap, "n_gt": n_gt,
+                "n_det": len(cls_dets),
+                "n_tp": int(cum_tp[-1]) if len(cum_tp) else 0,
+                "best_f1": best_f1,
+                "best_f1_conf": best_f1_conf,
+                "best_f1_precision": best_f1_prec,
+                "best_f1_recall": best_f1_rec,
+            }
             pr_curves[cls_name] = (mrec, mpre, ap)
 
         all_aps = [v["ap"] for v in ap_per_class.values()]
@@ -484,7 +505,13 @@ def evaluate(args):
               f"(mean matched IoU={res['mean_matched_IoU']:.4f}) ---")
         for cls_name, info in sorted(res["per_class"].items()):
             print(f"    {cls_name:20s}  AP={info['ap']:.4f}  "
+                  f"F1={info['best_f1']:.4f}@conf={info['best_f1_conf']:.3f}  "
+                  f"(P={info['best_f1_precision']:.3f} R={info['best_f1_recall']:.3f})  "
                   f"(GT={info['n_gt']}, Det={info['n_det']}, TP={info['n_tp']})")
+
+        all_f1s = [v["best_f1"] for v in res["per_class"].values()]
+        mean_f1 = float(np.mean(all_f1s)) if all_f1s else 0.0
+        print(f"    {'MEAN F1':20s}  {mean_f1:.4f}")
     print("=" * 70)
 
     # --- Save JSON results ---------------------------------------------
@@ -499,8 +526,10 @@ def evaluate(args):
     }
     for iou_thr, res in results_per_threshold.items():
         key = f"mAP@{iou_thr}"
+        all_f1s = [v["best_f1"] for v in res["per_class"].values()]
         json_out[key] = {
             "mAP": res["mAP"],
+            "mean_F1": float(np.mean(all_f1s)) if all_f1s else 0.0,
             "mean_matched_IoU": res["mean_matched_IoU"],
             "per_class": res["per_class"],
         }
