@@ -112,7 +112,7 @@ class Decoder:
         rh = self.input_shapes[0]
         return np.concatenate([rw/w, rh/h], axis=-1) # (B,2)
         
-    def split_logits(self, x, n, n_channels=(4, 4)):  # 4, 4 -> 4, 80
+    def split_logits(self, x, n, n_channels=(4, 14)):  # 4, 4 -> 4, 80
         return np.reshape(x[:n * n_channels[0]], (-1, n_channels[0])), np.reshape(x[n * n_channels[0]:], (-1, n_channels[1]))
 
     def get_object_prob(self, x):

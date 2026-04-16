@@ -9,18 +9,18 @@
         [
             26,
             26,
-            8
+            18
         ],
         [
             13,
             13,
-            8
+            18
         ]
     ],
     "OBJ_THRESHOLD":0.001,
     "NMS_THRESHOLD":0.7,
     "PRE_THRESHOLD":0.0,
-    "N_CLASSES":4,
+    "N_CLASSES":14,
     "N_MAX_OBJ":300,
     "LOGIT_ORDER":"box_first",
     "DELTA_SCALE": 4.0,
