@@ -1,319 +1,157 @@
 {
-  "overall_mAP": 0.40558290479770587,
+  "overall_mAP": 0.1783060820183804,
   "iou_thresholds": [
-    0.5,
-    0.55,
-    0.6,
-    0.65,
-    0.7,
-    0.75,
-    0.8,
-    0.85,
-    0.9,
-    0.95
+    0.5
   ],
-  "n_images": 351,
-  "avg_fps": 0.7842931274823945,
-  "model": "/home/dpi/Desktop/inference__nov_migration/example/utils/object_detection_yolov9/req_files_ppr/mar_30_4_cls_model_416x416x3_inv-f.tachyrt",
-  "test_dir": "/home/dpi/Desktop/inference__nov_migration/example/complete_test_set_ppe",
+  "n_images": 2185,
+  "avg_fps": 0.674732300949454,
+  "model": "/home/dpi/Desktop/inference__nov_migration/example/utils/object_detection_yolov9/req_files_ppr/1_Mar_18_14_model_416x416x3_inv-f.tachyrt",
+  "test_dir": "/home/dpi/Desktop/inference__nov_migration/example/NIPA_complete",
   "input_shape": "416x416x3",
   "mAP@0.5": {
-    "mAP": 0.8641455436536851,
-    "mean_matched_IoU": 0.7214031187542331,
+    "mAP": 0.1783060820183804,
+    "mean_F1": 0.2542389810955658,
+    "mean_matched_IoU": 0.6385347853101117,
     "per_class": {
-      "ladder_with_outriggers": {
-        "ap": 0.9544358510787696,
-        "n_gt": 157,
-        "n_det": 1534,
-        "n_tp": 151
+      "cement_truck": {
+        "ap": 0.3650397599515335,
+        "n_gt": 62,
+        "n_det": 1769,
+        "n_tp": 36,
+        "best_f1": 0.5471698113207547,
+        "best_f1_conf": 0.4990234375,
+        "best_f1_precision": 0.6590909090909091,
+        "best_f1_recall": 0.46774193548387094
       },
-      "dder_without_outriggers": {
-        "ap": 0.9625389201731708,
-        "n_gt": 131,
-        "n_det": 975,
-        "n_tp": 129
+      "compactor": {
+        "ap": 0.1681064823315624,
+        "n_gt": 96,
+        "n_det": 810,
+        "n_tp": 46,
+        "best_f1": 0.32558139534883723,
+        "best_f1_conf": 0.12940272688865662,
+        "best_f1_precision": 0.3684210526315789,
+        "best_f1_recall": 0.2916666666666667
       },
-      "worker_with_helmet": {
-        "ap": 0.8520974530500421,
-        "n_gt": 201,
-        "n_det": 2229,
-        "n_tp": 192
+      "dump_truck": {
+        "ap": 0.19103680757302013,
+        "n_gt": 575,
+        "n_det": 7639,
+        "n_tp": 246,
+        "best_f1": 0.3128371089536138,
+        "best_f1_conf": 0.2351083904504776,
+        "best_f1_precision": 0.4119318181818182,
+        "best_f1_recall": 0.25217391304347825
       },
-      "worker_without_helmet": {
-        "ap": 0.6875099503127581,
-        "n_gt": 261,
-        "n_det": 4518,
-        "n_tp": 215
-      }
-    }
-  },
-  "mAP@0.55": {
-    "mAP": 0.8302569711118084,
-    "mean_matched_IoU": 0.7337178335046285,
-    "per_class": {
-      "ladder_with_outriggers": {
-        "ap": 0.9524040458544764,
-        "n_gt": 157,
-        "n_det": 1534,
-        "n_tp": 150
+      "excavator": {
+        "ap": 0.2175876302800267,
+        "n_gt": 963,
+        "n_det": 17895,
+        "n_tp": 563,
+        "best_f1": 0.3835616438356165,
+        "best_f1_conf": 0.10856642574071884,
+        "best_f1_precision": 0.4060324825986079,
+        "best_f1_recall": 0.363447559709242
       },
-      "dder_without_outriggers": {
-        "ap": 0.9416140110160667,
-        "n_gt": 131,
-        "n_det": 975,
-        "n_tp": 127
-      },
-      "worker_with_helmet": {
-        "ap": 0.7789563294919248,
-        "n_gt": 201,
-        "n_det": 2229,
-        "n_tp": 184
-      },
-      "worker_without_helmet": {
-        "ap": 0.6480534980847658,
-        "n_gt": 261,
-        "n_det": 4518,
-        "n_tp": 205
-      }
-    }
-  },
-  "mAP@0.6": {
-    "mAP": 0.7741683155363126,
-    "mean_matched_IoU": 0.7459842563461928,
-    "per_class": {
-      "ladder_with_outriggers": {
-        "ap": 0.9493505003028431,
-        "n_gt": 157,
-        "n_det": 1534,
-        "n_tp": 150
-      },
-      "dder_without_outriggers": {
-        "ap": 0.8805688753243005,
-        "n_gt": 131,
-        "n_det": 975,
-        "n_tp": 122
-      },
-      "worker_with_helmet": {
-        "ap": 0.6853372133478668,
-        "n_gt": 201,
-        "n_det": 2229,
-        "n_tp": 171
-      },
-      "worker_without_helmet": {
-        "ap": 0.5814166731702403,
-        "n_gt": 261,
-        "n_det": 4518,
-        "n_tp": 192
-      }
-    }
-  },
-  "mAP@0.65": {
-    "mAP": 0.7013921304402293,
-    "mean_matched_IoU": 0.7583105755734166,
-    "per_class": {
-      "ladder_with_outriggers": {
-        "ap": 0.9379344953845079,
-        "n_gt": 157,
-        "n_det": 1534,
-        "n_tp": 149
-      },
-      "dder_without_outriggers": {
-        "ap": 0.8116480804884054,
-        "n_gt": 131,
-        "n_det": 975,
-        "n_tp": 115
-      },
-      "worker_with_helmet": {
-        "ap": 0.5426498695325038,
-        "n_gt": 201,
-        "n_det": 2229,
-        "n_tp": 145
-      },
-      "worker_without_helmet": {
-        "ap": 0.5133360763554998,
-        "n_gt": 261,
-        "n_det": 4518,
-        "n_tp": 179
-      }
-    }
-  },
-  "mAP@0.7": {
-    "mAP": 0.5461602935367915,
-    "mean_matched_IoU": 0.7772417406997691,
-    "per_class": {
-      "ladder_with_outriggers": {
-        "ap": 0.8347288586485482,
-        "n_gt": 157,
-        "n_det": 1534,
-        "n_tp": 138
-      },
-      "dder_without_outriggers": {
-        "ap": 0.6535409902024714,
-        "n_gt": 131,
-        "n_det": 975,
-        "n_tp": 100
-      },
-      "worker_with_helmet": {
-        "ap": 0.3310116717222568,
-        "n_gt": 201,
-        "n_det": 2229,
-        "n_tp": 109
-      },
-      "worker_without_helmet": {
-        "ap": 0.36535965357388983,
-        "n_gt": 261,
-        "n_det": 4518,
-        "n_tp": 139
-      }
-    }
-  },
-  "mAP@0.75": {
-    "mAP": 0.2669425360240972,
-    "mean_matched_IoU": 0.8044054377817746,
-    "per_class": {
-      "ladder_with_outriggers": {
-        "ap": 0.37270473106148905,
-        "n_gt": 157,
-        "n_det": 1534,
-        "n_tp": 86
-      },
-      "dder_without_outriggers": {
-        "ap": 0.3555275899934488,
-        "n_gt": 131,
-        "n_det": 975,
-        "n_tp": 70
-      },
-      "worker_with_helmet": {
-        "ap": 0.15672468432136574,
-        "n_gt": 201,
-        "n_det": 2229,
-        "n_tp": 70
-      },
-      "worker_without_helmet": {
-        "ap": 0.18281313872008514,
-        "n_gt": 261,
-        "n_det": 4518,
-        "n_tp": 97
-      }
-    }
-  },
-  "mAP@0.8": {
-    "mAP": 0.06684793891226665,
-    "mean_matched_IoU": 0.8389891580576844,
-    "per_class": {
-      "ladder_with_outriggers": {
-        "ap": 0.08109710282635046,
-        "n_gt": 157,
-        "n_det": 1534,
-        "n_tp": 39
-      },
-      "dder_without_outriggers": {
-        "ap": 0.10044600315099625,
-        "n_gt": 131,
-        "n_det": 975,
-        "n_tp": 36
-      },
-      "worker_with_helmet": {
-        "ap": 0.0470948014652143,
-        "n_gt": 201,
-        "n_det": 2229,
-        "n_tp": 33
-      },
-      "worker_without_helmet": {
-        "ap": 0.0387538482065056,
-        "n_gt": 261,
-        "n_det": 4518,
-        "n_tp": 45
-      }
-    }
-  },
-  "mAP@0.85": {
-    "mAP": 0.00584276295887676,
-    "mean_matched_IoU": 0.8736282496736049,
-    "per_class": {
-      "ladder_with_outriggers": {
-        "ap": 0.003042114269417245,
-        "n_gt": 157,
-        "n_det": 1534,
-        "n_tp": 8
-      },
-      "dder_without_outriggers": {
-        "ap": 0.007262620812239134,
-        "n_gt": 131,
-        "n_det": 975,
-        "n_tp": 9
-      },
-      "worker_with_helmet": {
-        "ap": 0.006419396218923123,
-        "n_gt": 201,
-        "n_det": 2229,
-        "n_tp": 12
-      },
-      "worker_without_helmet": {
-        "ap": 0.006646920534927536,
-        "n_gt": 261,
-        "n_det": 4518,
-        "n_tp": 17
-      }
-    }
-  },
-  "mAP@0.9": {
-    "mAP": 7.255580299139446e-05,
-    "mean_matched_IoU": 0.913714594998757,
-    "per_class": {
-      "ladder_with_outriggers": {
+      "grader": {
         "ap": 0.0,
-        "n_gt": 157,
-        "n_det": 1534,
-        "n_tp": 0
+        "n_gt": 13,
+        "n_det": 609,
+        "n_tp": 0,
+        "best_f1": 0.0,
+        "best_f1_conf": 0.46101677417755127,
+        "best_f1_precision": 0.0,
+        "best_f1_recall": 0.0
       },
-      "dder_without_outriggers": {
-        "ap": 0.00015578750584203146,
-        "n_gt": 131,
-        "n_det": 975,
-        "n_tp": 1
+      "mobile_crane": {
+        "ap": 0.46158750437208396,
+        "n_gt": 346,
+        "n_det": 9424,
+        "n_tp": 246,
+        "best_f1": 0.4968944099378882,
+        "best_f1_conf": 0.2254166156053543,
+        "best_f1_precision": 0.5369127516778524,
+        "best_f1_recall": 0.4624277456647399
       },
-      "worker_with_helmet": {
-        "ap": 0.0,
-        "n_gt": 201,
-        "n_det": 2229,
-        "n_tp": 0
+      "tower_crane": {
+        "ap": 0.0640257121454449,
+        "n_gt": 54,
+        "n_det": 5236,
+        "n_tp": 15,
+        "best_f1": 0.13559322033898305,
+        "best_f1_conf": 0.6279512047767639,
+        "best_f1_precision": 0.8,
+        "best_f1_recall": 0.07407407407407407
       },
-      "worker_without_helmet": {
-        "ap": 0.0001344357061235464,
-        "n_gt": 261,
-        "n_det": 4518,
-        "n_tp": 2
-      }
-    }
-  },
-  "mAP@0.95": {
-    "mAP": 0.0,
-    "mean_matched_IoU": 0.0,
-    "per_class": {
-      "ladder_with_outriggers": {
-        "ap": 0.0,
-        "n_gt": 157,
-        "n_det": 1534,
-        "n_tp": 0
+      "Crane_Hook": {
+        "ap": 0.01111350765770909,
+        "n_gt": 206,
+        "n_det": 3272,
+        "n_tp": 30,
+        "best_f1": 0.04426559356136821,
+        "best_f1_conf": 0.03126191347837448,
+        "best_f1_precision": 0.037800687285223365,
+        "best_f1_recall": 0.05339805825242718
       },
-      "dder_without_outriggers": {
-        "ap": 0.0,
-        "n_gt": 131,
-        "n_det": 975,
-        "n_tp": 0
+      "worker": {
+        "ap": 0.11935607373900778,
+        "n_gt": 4006,
+        "n_det": 131818,
+        "n_tp": 1862,
+        "best_f1": 0.26720047449584816,
+        "best_f1_conf": 0.26817408204078674,
+        "best_f1_precision": 0.32907231555880206,
+        "best_f1_recall": 0.22491263105341988
       },
-      "worker_with_helmet": {
-        "ap": 0.0,
-        "n_gt": 201,
-        "n_det": 2229,
-        "n_tp": 0
+      "Hardhat": {
+        "ap": 0.024143439100012824,
+        "n_gt": 3268,
+        "n_det": 19888,
+        "n_tp": 455,
+        "best_f1": 0.08043529690087532,
+        "best_f1_conf": 0.4436004161834717,
+        "best_f1_precision": 0.1772679874869656,
+        "best_f1_recall": 0.052019583843329255
       },
-      "worker_without_helmet": {
-        "ap": 0.0,
-        "n_gt": 261,
-        "n_det": 4518,
-        "n_tp": 0
+      "Red_Hardhat": {
+        "ap": 1.947078408847524e-05,
+        "n_gt": 253,
+        "n_det": 209,
+        "n_tp": 1,
+        "best_f1": 0.0043859649122807015,
+        "best_f1_conf": 0.0012943679466843605,
+        "best_f1_precision": 0.0049261083743842365,
+        "best_f1_recall": 0.003952569169960474
+      },
+      "scaffolds": {
+        "ap": 0.8364806141910226,
+        "n_gt": 718,
+        "n_det": 26386,
+        "n_tp": 699,
+        "best_f1": 0.8249619482496194,
+        "best_f1_conf": 0.4644157588481903,
+        "best_f1_precision": 0.9093959731543624,
+        "best_f1_recall": 0.754874651810585
+      },
+      "Lifted Load": {
+        "ap": 0.03687036706393713,
+        "n_gt": 158,
+        "n_det": 2103,
+        "n_tp": 63,
+        "best_f1": 0.11506849315068493,
+        "best_f1_conf": 0.020645929500460625,
+        "best_f1_precision": 0.10144927536231885,
+        "best_f1_recall": 0.13291139240506328
+      },
+      "Hook": {
+        "ap": 0.0009177790678761648,
+        "n_gt": 427,
+        "n_det": 5979,
+        "n_tp": 25,
+        "best_f1": 0.021390374331550804,
+        "best_f1_conf": 0.01590639166533947,
+        "best_f1_precision": 0.024922118380062305,
+        "best_f1_recall": 0.01873536299765808
       }
     }
   }
