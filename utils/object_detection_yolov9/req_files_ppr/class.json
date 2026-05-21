@@ -1,6 +1,15 @@
 {
-    "0": "ladder_with_outriggers",
-    "1": "dder_without_outriggers",
-    "2": "worker_with_helmet",
-    "3": "worker_without_helmet"
+    "0": "cement_truck",
+    "1": "compactor",
+    "2": "dump_truck",
+    "3": "excavator",
+    "4": "grader",
+    "5": "mobile_crane",
+    "6": "tower_crane",
+    "7": "worker",
+    "8": "Hardhat",
+    "9": "Red_Hardhat",
+    "10": "scaffolds",
+    "11": "Lifted Load",
+    "12": "Hook"
 }

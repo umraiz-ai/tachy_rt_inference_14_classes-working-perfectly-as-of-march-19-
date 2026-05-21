@@ -9,7 +9,7 @@ make_instance with frame_spliter / frame_splitter fallback, connect_instance.
 
 import os
 import sys
-
+import time
 sys.path.append('../utils/common')
 import argparse
 import importlib
@@ -254,13 +254,35 @@ def inference(args):
     start_thread.start()
 
 
+# 2) Replace ONLY get_result(args) with this
 def get_result(args):
     args.post_config = read_json(args.post_config_path_resolved)
     sys.path.append('../utils/object_detection_yolov9/{}'.format(args.model))
     args.post = importlib.import_module('post_process').Decoder(args.post_config)
 
+    total_frames = 0
+    t0 = time.time()
+    window_start = t0
+    window_frames = 0
+    prev_t = t0
+
     while True:
         args.ret = args.instance.get_result()
+        now = time.time()
+
+        # FPS stats
+        total_frames += 1
+        window_frames += 1
+        inst_fps = 1.0 / max(now - prev_t, 1e-6)
+        prev_t = now
+
+        if now - window_start >= 1.0:
+            win_fps = window_frames / (now - window_start)
+            avg_fps = total_frames / (now - t0)
+            print(f"[FPS] inst={inst_fps:.2f}, window={win_fps:.2f}, avg={avg_fps:.2f}")
+            window_start = now
+            window_frames = 0
+
         args.anno = args.post.main(
             args.ret['buf'].view(np.float32),
             np.array([[0, 0, args.w - 1, args.h - 1]], dtype=np.float32),
