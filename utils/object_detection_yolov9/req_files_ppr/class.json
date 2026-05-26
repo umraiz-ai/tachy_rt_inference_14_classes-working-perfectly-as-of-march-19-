@@ -6,10 +6,11 @@
     "4": "grader",
     "5": "mobile_crane",
     "6": "tower_crane",
-    "7": "worker",
-    "8": "Hardhat",
-    "9": "Red_Hardhat",
-    "10": "scaffolds",
-    "11": "Lifted Load",
-    "12": "Hook"
+    "7": "Crane_Hook",
+    "8": "worker",
+    "9": "Hardhat",
+    "10": "Red_Hardhat",
+    "11": "scaffolds",
+    "12": "Lifted Load",
+    "13": "Hook"
 }
