@@ -1,157 +1,69 @@
 {
-  "overall_mAP": 0.1783060820183804,
+  "overall_mAP": 0.9162001663296231,
   "iou_thresholds": [
     0.5
   ],
-  "n_images": 2185,
-  "avg_fps": 0.674732300949454,
-  "model": "/home/dpi/Desktop/inference__nov_migration/example/utils/object_detection_yolov9/req_files_ppr/1_Mar_18_14_model_416x416x3_inv-f.tachyrt",
-  "test_dir": "/home/dpi/Desktop/inference__nov_migration/example/NIPA_complete",
-  "input_shape": "416x416x3",
+  "n_images": 351,
+  "avg_fps": 1.213849579426387,
+  "model": "/home/dpi/Desktop/inference__nov_migration/example/utils/object_detection_yolov9/req_files_ppr/oct_1_model_256x416x3_inv-f.tachyrt",
+  "test_dir": "/home/dpi/Desktop/inference__nov_migration/example/complete_test_set_ppe",
+  "input_shape": "256x416x3",
+  "preprocess": "vendor",
+  "vendor_transpose_chw": false,
+  "vendor_nor_mean": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "vendor_nor_std": [
+    255.0,
+    255.0,
+    255.0
+  ],
   "mAP@0.5": {
-    "mAP": 0.1783060820183804,
-    "mean_F1": 0.2542389810955658,
-    "mean_matched_IoU": 0.6385347853101117,
+    "mAP": 0.9162001663296231,
+    "mean_F1": 0.9220162435173855,
+    "mean_matched_IoU": 0.8590756273126384,
     "per_class": {
-      "cement_truck": {
-        "ap": 0.3650397599515335,
-        "n_gt": 62,
-        "n_det": 1769,
-        "n_tp": 36,
-        "best_f1": 0.5471698113207547,
-        "best_f1_conf": 0.4990234375,
-        "best_f1_precision": 0.6590909090909091,
-        "best_f1_recall": 0.46774193548387094
+      "ladder_with_outriggers": {
+        "ap": 0.9734448599865821,
+        "n_gt": 157,
+        "n_det": 590,
+        "n_tp": 154,
+        "best_f1": 0.9840255591054313,
+        "best_f1_conf": 0.5019530653953552,
+        "best_f1_precision": 0.9871794871794872,
+        "best_f1_recall": 0.9808917197452229
       },
-      "compactor": {
-        "ap": 0.1681064823315624,
-        "n_gt": 96,
-        "n_det": 810,
-        "n_tp": 46,
-        "best_f1": 0.32558139534883723,
-        "best_f1_conf": 0.12940272688865662,
-        "best_f1_precision": 0.3684210526315789,
-        "best_f1_recall": 0.2916666666666667
+      "dder_without_outriggers": {
+        "ap": 0.9453904920128012,
+        "n_gt": 131,
+        "n_det": 439,
+        "n_tp": 126,
+        "best_f1": 0.9453124999999999,
+        "best_f1_conf": 0.5602526664733887,
+        "best_f1_precision": 0.968,
+        "best_f1_recall": 0.9236641221374046
       },
-      "dump_truck": {
-        "ap": 0.19103680757302013,
-        "n_gt": 575,
-        "n_det": 7639,
-        "n_tp": 246,
-        "best_f1": 0.3128371089536138,
-        "best_f1_conf": 0.2351083904504776,
-        "best_f1_precision": 0.4119318181818182,
-        "best_f1_recall": 0.25217391304347825
+      "worker_with_helmet": {
+        "ap": 0.8744738131222494,
+        "n_gt": 201,
+        "n_det": 1142,
+        "n_tp": 185,
+        "best_f1": 0.9027431421446384,
+        "best_f1_conf": 0.4590761363506317,
+        "best_f1_precision": 0.905,
+        "best_f1_recall": 0.900497512437811
       },
-      "excavator": {
-        "ap": 0.2175876302800267,
-        "n_gt": 963,
-        "n_det": 17895,
-        "n_tp": 563,
-        "best_f1": 0.3835616438356165,
-        "best_f1_conf": 0.10856642574071884,
-        "best_f1_precision": 0.4060324825986079,
-        "best_f1_recall": 0.363447559709242
-      },
-      "grader": {
-        "ap": 0.0,
-        "n_gt": 13,
-        "n_det": 609,
-        "n_tp": 0,
-        "best_f1": 0.0,
-        "best_f1_conf": 0.46101677417755127,
-        "best_f1_precision": 0.0,
-        "best_f1_recall": 0.0
-      },
-      "mobile_crane": {
-        "ap": 0.46158750437208396,
-        "n_gt": 346,
-        "n_det": 9424,
-        "n_tp": 246,
-        "best_f1": 0.4968944099378882,
-        "best_f1_conf": 0.2254166156053543,
-        "best_f1_precision": 0.5369127516778524,
-        "best_f1_recall": 0.4624277456647399
-      },
-      "tower_crane": {
-        "ap": 0.0640257121454449,
-        "n_gt": 54,
-        "n_det": 5236,
-        "n_tp": 15,
-        "best_f1": 0.13559322033898305,
-        "best_f1_conf": 0.6279512047767639,
-        "best_f1_precision": 0.8,
-        "best_f1_recall": 0.07407407407407407
-      },
-      "Crane_Hook": {
-        "ap": 0.01111350765770909,
-        "n_gt": 206,
-        "n_det": 3272,
-        "n_tp": 30,
-        "best_f1": 0.04426559356136821,
-        "best_f1_conf": 0.03126191347837448,
-        "best_f1_precision": 0.037800687285223365,
-        "best_f1_recall": 0.05339805825242718
-      },
-      "worker": {
-        "ap": 0.11935607373900778,
-        "n_gt": 4006,
-        "n_det": 131818,
-        "n_tp": 1862,
-        "best_f1": 0.26720047449584816,
-        "best_f1_conf": 0.26817408204078674,
-        "best_f1_precision": 0.32907231555880206,
-        "best_f1_recall": 0.22491263105341988
-      },
-      "Hardhat": {
-        "ap": 0.024143439100012824,
-        "n_gt": 3268,
-        "n_det": 19888,
-        "n_tp": 455,
-        "best_f1": 0.08043529690087532,
-        "best_f1_conf": 0.4436004161834717,
-        "best_f1_precision": 0.1772679874869656,
-        "best_f1_recall": 0.052019583843329255
-      },
-      "Red_Hardhat": {
-        "ap": 1.947078408847524e-05,
-        "n_gt": 253,
-        "n_det": 209,
-        "n_tp": 1,
-        "best_f1": 0.0043859649122807015,
-        "best_f1_conf": 0.0012943679466843605,
-        "best_f1_precision": 0.0049261083743842365,
-        "best_f1_recall": 0.003952569169960474
-      },
-      "scaffolds": {
-        "ap": 0.8364806141910226,
-        "n_gt": 718,
-        "n_det": 26386,
-        "n_tp": 699,
-        "best_f1": 0.8249619482496194,
-        "best_f1_conf": 0.4644157588481903,
-        "best_f1_precision": 0.9093959731543624,
-        "best_f1_recall": 0.754874651810585
-      },
-      "Lifted Load": {
-        "ap": 0.03687036706393713,
-        "n_gt": 158,
-        "n_det": 2103,
-        "n_tp": 63,
-        "best_f1": 0.11506849315068493,
-        "best_f1_conf": 0.020645929500460625,
-        "best_f1_precision": 0.10144927536231885,
-        "best_f1_recall": 0.13291139240506328
-      },
-      "Hook": {
-        "ap": 0.0009177790678761648,
-        "n_gt": 427,
-        "n_det": 5979,
-        "n_tp": 25,
-        "best_f1": 0.021390374331550804,
-        "best_f1_conf": 0.01590639166533947,
-        "best_f1_precision": 0.024922118380062305,
-        "best_f1_recall": 0.01873536299765808
+      "worker_without_helmet": {
+        "ap": 0.87149150019686,
+        "n_gt": 261,
+        "n_det": 3015,
+        "n_tp": 240,
+        "best_f1": 0.8559837728194726,
+        "best_f1_conf": 0.3647775650024414,
+        "best_f1_precision": 0.9094827586206896,
+        "best_f1_recall": 0.8084291187739464
       }
     }
   }

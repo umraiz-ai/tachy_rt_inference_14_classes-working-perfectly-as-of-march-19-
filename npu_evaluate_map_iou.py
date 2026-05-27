@@ -21,6 +21,13 @@ Runs a .tachyrt YOLOv9 model on the NPU, compares predictions against
 YOLO-format ground-truth labels and reports mAP@0.5, mAP@0.5:0.95,
 per-class AP, and IoU statistics.
 
+Default ``--preprocess vendor`` matches the Tachy vendor export fork:
+letterbox (INTER_AREA, no scale-up), pad 114, BGR→RGB, optional CHW branch,
+(x-mean)/std as float16 for the NPU, vendor ``ref`` passed to Decoder.main,
+and GT boxes in **original image** pixels (same frame as decoded boxes).
+
+Use ``--preprocess stretch`` for the older plain resize + full-frame ref.
+
 Example
 -------
 coco_style
@@ -102,6 +109,33 @@ def parse_arguments():
     p.add_argument("--save_visualisations", action="store_true",
                     help="Save per-image annotated PNGs (slow for large sets)")
 
+    p.add_argument(
+        "--preprocess",
+        type=str,
+        default="vendor",
+        choices=("vendor", "stretch"),
+        help="vendor: Tachy vendor letterbox (INTER_AREA, pad 114, BGR→RGB, vendor ref); "
+             "stretch: legacy cv2.resize to input_shape + ref [[0,0,w-1,h-1]]",
+    )
+    p.add_argument(
+        "--vendor_transpose_chw",
+        type=str,
+        default="false",
+        help="Match vendor fork when self.t is true: CHW + channel flip [::-1] on axis 0",
+    )
+    p.add_argument(
+        "--vendor_nor_mean",
+        type=str,
+        default="0,0,0",
+        help="Comma-separated mean for (img-mean)/std after letterbox (RGB order)",
+    )
+    p.add_argument(
+        "--vendor_nor_std",
+        type=str,
+        default="255,255,255",
+        help="Comma-separated std for (img-mean)/std (typical 255 for /255)",
+    )
+
     args = p.parse_args()
 
     if "TACHY_INTERFACE" not in os.environ:
@@ -113,6 +147,19 @@ def parse_arguments():
     args.h, args.w = int(dims[0]), int(dims[1])
     args.upload_firmware = args.upload_firmware.lower() == "true"
     args.iou_thresholds = [float(t) for t in args.iou_thresholds.split(",")]
+    args.vendor_transpose_chw = args.vendor_transpose_chw.lower() == "true"
+
+    def _parse_vec3(s, name):
+        parts = [float(x.strip()) for x in s.split(",")]
+        if len(parts) == 1:
+            parts = [parts[0], parts[0], parts[0]]
+        if len(parts) != 3:
+            print(f"{name} must have 1 or 3 values, got: {s!r}")
+            sys.exit(1)
+        return parts
+
+    args.vendor_nor_mean = _parse_vec3(args.vendor_nor_mean, "--vendor_nor_mean")
+    args.vendor_nor_std = _parse_vec3(args.vendor_nor_std, "--vendor_nor_std")
 
     args.clss_dict = read_json(args.class_json)
 
@@ -185,6 +232,12 @@ def make_instance(args):
         except Exception:
             pass
 
+    # Vendor path normalizes in Python → runtime must not divide by 255 again.
+    if args.preprocess == "vendor":
+        in_std, in_mean = 1.0, 0.0
+    else:
+        in_std, in_mean = 255.0, 0.0
+
     config = {
         "global": {
             "name": args.model_name,
@@ -195,8 +248,8 @@ def make_instance(args):
         },
         "input": [{
             "method": rt_core.INPUT_FMT_BINARY,
-            "std": 255.0,
-            "mean": 0.0,
+            "std": in_std,
+            "mean": in_mean,
         }],
         "output": {"reorder": True},
     }
@@ -207,7 +260,8 @@ def make_instance(args):
             args.instance_name, algo, config,
         )
         if ret:
-            print(f"make_instance OK  (algorithm={algo})")
+            print(f"make_instance OK  (algorithm={algo}, preprocess={args.preprocess}, "
+                  f"input mean={in_mean}, std={in_std})")
             return True
 
     print("make_instance FAILED — error:", rt_core.get_last_error_code())
@@ -244,10 +298,84 @@ def load_post_processor(args):
 
 
 # ---------------------------------------------------------------------------
-# Ground-truth loading (YOLO txt → absolute coords at model input resolution)
+# Vendor letterbox + decoder reference (matches vendor export fork)
 # ---------------------------------------------------------------------------
-def load_ground_truths(test_dir, img_w, img_h):
-    """Return {image_stem: [{class_id, box:[x1,y1,x2,y2]}]} and image paths."""
+def vendor_preprocess_letterbox(bgr_uint8, rh, rw, transpose_chw, nor_mean, nor_std):
+    """
+    Letterbox BGR uint8 → float16 tensor for NPU + vendor ref for Decoder.main.
+
+    Returns:
+      blob: float16 array for process([[blob]])  (NHWC unless transpose_chw)
+      ref:  (1,4) float32 vendor info rectangle
+      vis_bgr: letterboxed BGR uint8 for optional visualisation
+    """
+    img = bgr_uint8
+    h, w, _ = img.shape
+
+    gain = min(rh / h, rw / w)
+    gain = min(gain, 1.0)
+    new_unpad = (int(round(w * gain)), int(round(h * gain)))
+    pad_x = (rw - new_unpad[0]) / 2.0
+    pad_y = (rh - new_unpad[1]) / 2.0
+
+    if (w, h) != new_unpad:
+        img = cv2.resize(img, new_unpad, interpolation=cv2.INTER_AREA)
+
+    top = int(round(pad_y - 0.1))
+    bottom = int(round(pad_y + 0.1))
+    left = int(round(pad_x - 0.1))
+    right = int(round(pad_x + 0.1))
+    img_lb_bgr = cv2.copyMakeBorder(
+        img, top, bottom, left, right,
+        cv2.BORDER_CONSTANT, value=(114, 114, 114),
+    )
+    img_rgb = img_lb_bgr[:, :, ::-1]
+
+    mean = np.asarray(nor_mean, dtype=np.float32)
+    std = np.asarray(nor_std, dtype=np.float32)
+    std = np.where(std == 0, 1.0, std)
+
+    if transpose_chw:
+        x = np.transpose(img_rgb.astype(np.float32), (2, 0, 1))[::-1]
+        mean = mean.reshape(3, 1, 1)
+        std = std.reshape(3, 1, 1)
+        img_f = (x - mean) / std
+        blob = np.ascontiguousarray(img_f.astype(np.float16)[None, ...])
+    else:
+        mean = mean.reshape(1, 1, 3)
+        std = std.reshape(1, 1, 3)
+        img_f = (img_rgb.astype(np.float32) - mean) / std
+        blob = np.ascontiguousarray(
+            img_f.astype(np.float16).reshape(-1, rh, rw, 3)
+        )
+
+    ref_x1 = -pad_x / gain
+    ref_y1 = -pad_y / gain
+    ref_x2 = ref_x1 + (rw / gain) - 1.0
+    ref_y2 = ref_y1 + (rh / gain) - 1.0
+    ref = np.array([[ref_x1, ref_y1, ref_x2, ref_y2]], dtype=np.float32)
+
+    return blob, ref, img_lb_bgr
+
+
+def yolo_norm_to_pixel_xyxy(xc_n, yc_n, bw_n, bh_n, pw, ph):
+    """YOLO normalised box → pixel xyxy in an image of size (pw, ph)."""
+    xc = xc_n * pw
+    yc = yc_n * ph
+    bw = bw_n * pw
+    bh = bh_n * ph
+    x1 = max(0.0, xc - bw / 2.0)
+    y1 = max(0.0, yc - bh / 2.0)
+    x2 = min(float(pw), xc + bw / 2.0)
+    y2 = min(float(ph), yc + bh / 2.0)
+    return [x1, y1, x2, y2]
+
+
+# ---------------------------------------------------------------------------
+# Ground-truth loading
+# ---------------------------------------------------------------------------
+def load_ground_truths_raw(test_dir):
+    """Return {stem: [{class_id, xc, yc, bw, bh} YOLO-normalised]} and image paths."""
     img_dir = os.path.join(test_dir, "images")
     lbl_dir = os.path.join(test_dir, "labels")
 
@@ -260,35 +388,40 @@ def load_ground_truths(test_dir, img_w, img_h):
         print(f"No images found in {img_dir}")
         sys.exit(1)
 
-    gt_by_image = {}
-    valid_image_paths = []
-
+    gt_raw = {}
     for img_path in image_paths:
         stem = os.path.splitext(os.path.basename(img_path))[0]
         label_path = os.path.join(lbl_dir, stem + ".txt")
-
-        boxes = []
+        rows = []
         if os.path.isfile(label_path):
             with open(label_path) as f:
                 for line in f:
                     parts = line.strip().split()
                     if len(parts) < 5:
                         continue
-                    cls_id = int(parts[0])
-                    xc = float(parts[1]) * img_w
-                    yc = float(parts[2]) * img_h
-                    bw = float(parts[3]) * img_w
-                    bh = float(parts[4]) * img_h
-                    x1 = max(0.0, xc - bw / 2.0)
-                    y1 = max(0.0, yc - bh / 2.0)
-                    x2 = min(float(img_w), xc + bw / 2.0)
-                    y2 = min(float(img_h), yc + bh / 2.0)
-                    boxes.append({"class_id": cls_id, "box": [x1, y1, x2, y2]})
+                    rows.append({
+                        "class_id": int(parts[0]),
+                        "xc": float(parts[1]),
+                        "yc": float(parts[2]),
+                        "bw": float(parts[3]),
+                        "bh": float(parts[4]),
+                    })
+        gt_raw[stem] = rows
 
+    return gt_raw, image_paths
+
+
+def load_ground_truths(test_dir, img_w, img_h):
+    """Stretch mode: GT xyxy in model input pixel space (img_w × img_h)."""
+    gt_raw, image_paths = load_ground_truths_raw(test_dir)
+    gt_by_image = {}
+    for stem, rows in gt_raw.items():
+        boxes = []
+        for r in rows:
+            xyxy = yolo_norm_to_pixel_xyxy(r["xc"], r["yc"], r["bw"], r["bh"], img_w, img_h)
+            boxes.append({"class_id": r["class_id"], "box": xyxy})
         gt_by_image[stem] = boxes
-        valid_image_paths.append(img_path)
-
-    return gt_by_image, valid_image_paths
+    return gt_by_image, image_paths
 
 
 # ---------------------------------------------------------------------------
@@ -327,14 +460,23 @@ def compute_ap(recalls, precisions):
 # Core evaluation logic
 # ---------------------------------------------------------------------------
 def evaluate(args):
-    gt_by_image, image_paths = load_ground_truths(args.test_dir, args.w, args.h)
+    gt_raw, image_paths = load_ground_truths_raw(args.test_dir)
     n_images = len(image_paths)
     print(f"\nImages to evaluate : {n_images}")
+    print(f"  Preprocess         : {args.preprocess}")
+    if args.preprocess == "vendor":
+        print(f"  Vendor CHW+t flip  : {args.vendor_transpose_chw}")
+        print(f"  Vendor nor_mean    : {args.vendor_nor_mean}")
+        print(f"  Vendor nor_std     : {args.vendor_nor_std}")
+
+    gt_by_image = {}
+    if args.preprocess == "stretch":
+        gt_by_image, _ = load_ground_truths(args.test_dir, args.w, args.h)
 
     all_class_ids = set()
-    for boxes in gt_by_image.values():
-        for b in boxes:
-            all_class_ids.add(b["class_id"])
+    for rows in gt_raw.values():
+        for r in rows:
+            all_class_ids.add(r["class_id"])
 
     # --- Run inference on every image ----------------------------------
     # detections_by_image[stem] = [ {class_id, confidence, box} ]
@@ -348,10 +490,36 @@ def evaluate(args):
         if img is None:
             print(f"  [WARN] cannot read {img_path}")
             detections_by_image[stem] = []
+            if args.preprocess == "vendor":
+                gt_by_image[stem] = []
             continue
 
-        img_resized = cv2.resize(img, (args.w, args.h))
-        blob = img_resized.reshape(-1, args.h, args.w, 3)
+        h0, w0 = img.shape[:2]
+
+        if args.preprocess == "vendor":
+            gt_boxes = [
+                {
+                    "class_id": r["class_id"],
+                    "box": yolo_norm_to_pixel_xyxy(
+                        r["xc"], r["yc"], r["bw"], r["bh"], w0, h0,
+                    ),
+                }
+                for r in gt_raw[stem]
+            ]
+            gt_by_image[stem] = gt_boxes
+
+            blob, ref, vis_bgr = vendor_preprocess_letterbox(
+                img,
+                args.h,
+                args.w,
+                args.vendor_transpose_chw,
+                args.vendor_nor_mean,
+                args.vendor_nor_std,
+            )
+        else:
+            vis_bgr = cv2.resize(img, (args.w, args.h))
+            blob = vis_bgr.reshape(-1, args.h, args.w, 3)
+            ref = np.array([[0, 0, args.w - 1, args.h - 1]], dtype=np.float32)
 
         t0 = time.time()
         args.instance.process([[blob]])
@@ -360,7 +528,6 @@ def evaluate(args):
         inference_times.append(dt)
 
         buf = raw["buf"].view(np.float32)
-        ref = np.array([[0, 0, args.w - 1, args.h - 1]], dtype=np.float32)
         anno = args.post.main(buf, ref)
 
         dets = []
@@ -385,7 +552,7 @@ def evaluate(args):
 
         # optional per-image visualisation
         if args.save_visualisations:
-            _save_vis(args, img_resized, gt_by_image[stem], dets, stem)
+            _save_vis(args, vis_bgr, gt_by_image[stem], dets, stem)
 
     total_inf = sum(inference_times)
     avg_fps = n_images / total_inf if total_inf > 0 else 0.0
@@ -523,6 +690,10 @@ def evaluate(args):
         "model": os.path.abspath(args.model),
         "test_dir": os.path.abspath(args.test_dir),
         "input_shape": args.input_shape,
+        "preprocess": args.preprocess,
+        "vendor_transpose_chw": args.vendor_transpose_chw,
+        "vendor_nor_mean": args.vendor_nor_mean,
+        "vendor_nor_std": args.vendor_nor_std,
     }
     for iou_thr, res in results_per_threshold.items():
         key = f"mAP@{iou_thr}"
@@ -660,6 +831,7 @@ def main():
     print(f"  Class map          : {args.class_json}")
     print(f"  Test directory     : {args.test_dir}")
     print(f"  Input shape        : {args.h}x{args.w}x3")
+    print(f"  Preprocess         : {args.preprocess}")
     print(f"  IoU thresholds     : {args.iou_thresholds}")
     print(f"  Conf threshold     : {args.conf_threshold}")
     print(f"  Output directory   : {args.output_dir}")

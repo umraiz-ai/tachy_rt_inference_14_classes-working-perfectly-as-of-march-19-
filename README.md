@@ -36,3 +36,7 @@ python npu_evaluate_map_iou.py \
     --iou_thresholds 0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95
 
 
+python npu_evaluate_map_iou.py   --model ./utils/object_detection_yolov9/req_files_ppr/oct_1_model_256x416x3_inv-f.tachyrt   --post_process_config ./utils/object_detection_yolov9/req_files_ppr/post_process_256x416x3.json   --post_process_module ./utils/object_detection_yolov9/req_files_ppr/post_process.py --class_json ./utils/object_detection_yolov9/req_files_ppr/class.json   --test_dir ./complete_test_set_ppe/   --input_shape 256x416x3
+
+this version showed highest mAP so far.
+

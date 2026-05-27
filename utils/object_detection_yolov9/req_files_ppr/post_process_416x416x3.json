@@ -4,23 +4,23 @@
         [
             52,
             52,
-            18
+            17
         ],
         [
             26,
             26,
-            18
+            17
         ],
         [
             13,
             13,
-            18
+            17
         ]
     ],
-    "OBJ_THRESHOLD":0.25,
+    "OBJ_THRESHOLD":0.001,
     "NMS_THRESHOLD":0.2,
     "PRE_THRESHOLD":0.0,
-    "N_CLASSES":14,
+    "N_CLASSES":13,
     "N_MAX_OBJ":300,
     "LOGIT_ORDER":"box_first",
     "DELTA_SCALE": 4.0,
