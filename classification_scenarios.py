@@ -2,24 +2,24 @@
 # coding: utf-8
 
 """
-This script is used to run object detection inference on a directory of images and save annotated outputs.
-It can also be used to run scaffold classification on the images.
+Run NPU object detection + optional scaffold safe/unsafe classification.
 
-Usage:
-python classification_scenarios.py --model <model_path> --model_name <model_name> --input_shape <input_shape> --post_process_config <post_process_config> --post_process_module <post_process_module> --class_json <class_json> --test_dir <test_dir> --output_dir <output_dir> --conf_threshold <conf_threshold> --scaffold_classification <scaffold_classification> --scaffold_conf_threshold <scaffold_conf_threshold> --upload_firmware <upload_firmware> --path_firmware <path_firmware>
+Inference pipeline matches infernce-may-28/inf_end_to_end.py (letterbox, frame_split,
+utils.yolov9 Decoder with built-in config).
 
-Example:
-python classification_scenarios.py --model /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/model.tachyrt --model_name object_detection_yolov9 --input_shape 416x416x3 --post_process_config /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/post_process_416x416x3.json --post_process_module /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/post_process.py --class_json /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/class.json --test_dir /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/test_dir --output_dir /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/output_dir --conf_threshold 0.25 --scaffold_classification true --scaffold_conf_threshold 0.30 --upload_firmware true --path_firmware /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/firmware
+Example (single folder):
+  python classification_scenarios.py --model ./model.tachyrt --test_dir ./images --output_dir ./out
 
-Example:
-python classification_scenarios.py --model /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/model.tachyrt --model_name object_detection_yolov9 --input_shape 416x416x3 --post_process_config /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/post_process_416x416x3.json --post_process_module /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/post_process.py --class_json /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/class.json --test_dir /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/test_dir --output_dir /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/output_dir --conf_threshold 0.25 --scaffold_classification true --scaffold_conf_threshold 0.30 --upload_firmware true --path_firmware /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/firmware
+Example (safe/unsafe eval):
 
-I can now run the script with the following command on the scaffold classification two directories safe and unsafe
-one for safe and one for unsafe and store the results in the output directory and print the metrics and save the results in a json file
-
-here is the command:
-python classification_scenarios.py --model /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/model.tachyrt --model_name object_detection_yolov9 --input_shape 416x416x3 --post_process_config /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/post_process_416x416x3.json --post_process_module /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/post_process.py --class_json /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/class.json --safe_dir /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/safe_dir --unsafe_dir /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/unsafe_dir --output_dir /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/output_dir --conf_threshold 0.25 --scaffold_classification true --scaffold_conf_threshold 0.30 --upload_firmware true --path_firmware /home/dpi/raspberrypi_20241209/inference/example/utils/object_detection_yolov9/req_files_ppr/firmware
-
+This skips hook and checks helmet rule and vertical rule only.
+python classification_scenarios.py \
+    --model ./utils/object_detection_yolov9/req_files_ppr/may_20_cls_13_dpi_model_416x416x3_inv-f.tachyrt \
+    --safe_dir ./Scenarios/scaffold/safe \
+    --unsafe_dir ./Scenarios/scaffold/unsafe \
+    --output_dir ./Scenarios/scaffold/predictions \
+    --scaffold_classification \
+    --skip_hook_rule
 """
 
 import os
@@ -34,12 +34,52 @@ from tqdm import tqdm
 import tachy_rt.core.functions as rt_core
 
 sys.path.append('./utils/common')
-from functions import read_json
+
+_MAY28_ROOT = os.path.normpath(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'infernce-may-28')
+)
+_MAY28_UTILS = os.path.join(_MAY28_ROOT, 'utils')
+for _p in (_MAY28_UTILS, _MAY28_ROOT):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 _scaffold_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Scenarios', 'scaffold')
 if _scaffold_dir not in sys.path:
     sys.path.append(_scaffold_dir)
 from scaffold_classification import detect_scaffold, resolve_scaffold_class_ids
+
+# Built-in defaults (same as infernce-may-28/inf_end_to_end.py inference())
+DEFAULT_INPUT_H = 416
+DEFAULT_INPUT_W = 416
+DEFAULT_DECODER_CONFIG = {
+    "SHAPES_INPUT": [416, 416, 3],
+    "SHAPES_OUTPUT": [
+        [52, 52, 17],
+        [26, 26, 17],
+        [13, 13, 17],
+    ],
+    "NMS_THRESHOLD": 0.2,
+    "OBJ_THRESHOLD": 0.25,
+    "N_CLASSES": 13,
+    "N_MAX_OBJ": 100,
+}
+
+# 13-class label map for drawing / scaffold role resolution
+DEFAULT_CLASS_DICT = {
+    "0": "cement_truck",
+    "1": "compactor",
+    "2": "dump_truck",
+    "3": "excavator",
+    "4": "grader",
+    "5": "mobile_crane",
+    "6": "tower_crane",
+    "7": "worker",
+    "8": "Hardhat",
+    "9": "Red_Hardhat",
+    "10": "scaffolds",
+    "11": "Lifted Load",
+    "12": "Hook",
+}
 
 
 def parse_arguments():
@@ -52,18 +92,6 @@ def parse_arguments():
 
     parser.add_argument('--model_name', type=str, default="object_detection_yolov9",
                         help='Logical model name used by tachy_rt')
-
-    parser.add_argument('--input_shape', type=str, required=True,
-                        help='Model input shape (HxWxD)')
-
-    parser.add_argument('--post_process_config', type=str, required=True,
-                        help='Path to the post-process JSON config')
-
-    parser.add_argument('--post_process_module', type=str, required=True,
-                        help='Path to post_process.py containing the Decoder class')
-
-    parser.add_argument('--class_json', type=str, required=True,
-                        help='Path to class.json (id -> name mapping)')
 
     parser.add_argument('--test_dir', type=str, default=None,
                         help='Directory containing input images (flat folder). Mutually exclusive with --safe_dir/--unsafe_dir.')
@@ -90,7 +118,20 @@ def parse_arguments():
         '--scaffold_conf_threshold',
         type=float,
         default=0.30,
-        help='Confidence gate for scaffold rule logic (default: 0.30)',
+        help='Confidence gate for detections used in scaffold rules (default: 0.30)',
+    )
+
+    parser.add_argument(
+        '--scaffold_min_conf',
+        type=float,
+        default=0.50,
+        help='Min scaffold detection confidence to enable hook/vertical rules (default: 0.50)',
+    )
+
+    parser.add_argument(
+        '--skip_hook_rule',
+        action='store_true',
+        help='Disable hook fastening rule (helmet + vertical rules still apply)',
     )
 
     parser.add_argument('--upload_firmware', type=str, default='false',
@@ -106,9 +147,11 @@ def parse_arguments():
         exit()
 
     args.interface = os.environ["TACHY_INTERFACE"]
-    args.h, args.w = list(map(int, args.input_shape.split('x')[:2]))
+    args.h = DEFAULT_INPUT_H
+    args.w = DEFAULT_INPUT_W
+    args.instance_name = args.model_name
     args.upload_firmware = args.upload_firmware.lower() == 'true'
-    args.clss_dict = read_json(args.class_json)
+    args.clss_dict = DEFAULT_CLASS_DICT.copy()
     os.makedirs(args.output_dir, exist_ok=True)
 
     has_test_dir = args.test_dir is not None
@@ -136,6 +179,8 @@ def parse_arguments():
     if args.scaffold_classification or args.eval_mode:
         args.scaffold_class_ids = resolve_scaffold_class_ids(args.clss_dict)
         print(f"Scaffold class IDs: {args.scaffold_class_ids}")
+        if args.skip_hook_rule:
+            print("Hook rule: DISABLED (--skip_hook_rule)")
 
     return args
 
@@ -214,6 +259,41 @@ def print_classification_metrics(metrics):
     print(f"  Unsafe images: {metrics['n_unsafe']:4d}  (correct: {metrics['unsafe_correct']})")
 
 
+def normalize(image, mean, var):
+    return (image - mean) / var
+
+
+def letterbox_preprocess(bgr_image, rh, rw, mean=0.0, std=255.0):
+    """Letterbox preprocess matching infernce-may-28/inf_end_to_end.py."""
+    h, w, _ = bgr_image.shape
+    image = bgr_image
+    gain = min(rh / h, rw / w)
+    gain = min(gain, 1.0)
+    new_unpad = (int(round(w * gain)), int(round(h * gain)))
+    pad_x = (rw - new_unpad[0]) / 2
+    pad_y = (rh - new_unpad[1]) / 2
+
+    if (w, h) != new_unpad:
+        image = cv2.resize(image, new_unpad, interpolation=cv2.INTER_AREA)
+
+    top = int(round(pad_y - 0.1))
+    bottom = int(round(pad_y + 0.1))
+    left = int(round(pad_x - 0.1))
+    right = int(round(pad_x + 0.1))
+    image = cv2.copyMakeBorder(
+        image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(114, 114, 114)
+    )[:, :, ::-1]
+    npu_input = normalize(image.astype(np.float32), mean, std)[None, ...]
+
+    ref_x1 = -pad_x / gain
+    ref_y1 = -pad_y / gain
+    ref_x2 = ref_x1 + (rw / gain) - 1
+    ref_y2 = ref_y1 + (rh / gain) - 1
+    ref = np.array([ref_x1, ref_y1, ref_x2, ref_y2], dtype=np.float32)[None, ...]
+
+    return npu_input, ref
+
+
 def _build_boot_data(path_firmware: str):
     spl = os.path.join(path_firmware, "spl.bin")
     uboot = os.path.join(path_firmware, "u-boot.bin")
@@ -273,11 +353,6 @@ def save_model(args):
 
 
 def make_instance(args):
-    args.instance_name = f"{args.model_name}_inst"
-    try:
-        rt_core.deinit_instance(args.interface, args.instance_name)
-    except Exception:
-        pass
     try:
         rt_core.deinit_instance(args.interface, args.model_name)
     except Exception:
@@ -294,8 +369,9 @@ def make_instance(args):
         "input": [
             {
                 "method": rt_core.INPUT_FMT_BINARY,
-                "std": 255.0,
-                "mean": 0.0
+                "std": 1.0,
+                "mean": 0.0,
+                "tx": -1,
             }
         ],
         "output": {
@@ -303,17 +379,16 @@ def make_instance(args):
         }
     }
 
-    for algo in ("frame_spliter", "frame_splitter"):
-        ret = rt_core.make_instance(
-            args.interface,
-            args.model_name,
-            args.instance_name,
-            algo,
-            args.config
-        )
-        if ret:
-            print(f"make_instance success with algorithm: {algo}")
-            return True
+    ret = rt_core.make_instance(
+        args.interface,
+        args.model_name,
+        args.model_name,
+        "frame_split",
+        args.config,
+    )
+    if ret:
+        print("make_instance success with algorithm: frame_split")
+        return True
 
     print("make_instance fail")
     print("Error :", rt_core.get_last_error_code())
@@ -330,40 +405,25 @@ def connect_instance(args):
 
 
 def load_post_processor(args):
-    if not os.path.isfile(args.post_process_config):
-        print(f"Post-process config not found: {args.post_process_config}")
-        exit(-1)
-
-    args.post_config = read_json(args.post_process_config)
-    print(f"Using post-processing config: {args.post_process_config}")
-
-    if not os.path.isfile(args.post_process_module):
-        print(f"Post-process module not found: {args.post_process_module}")
-        exit(-1)
-
-    post_module_dir = os.path.dirname(os.path.abspath(args.post_process_module))
-    if post_module_dir not in sys.path:
-        sys.path.append(post_module_dir)
-    args.post = __import__('post_process').Decoder(args.post_config)
-    print(f"Using post-processing module: {args.post_process_module}")
+    from utils.yolov9 import Decoder
+    args.post = Decoder(DEFAULT_DECODER_CONFIG)
+    print(f"Using infernce-may-28 Decoder: {_MAY28_ROOT}/utils/yolov9.py")
+    print(f"  input {DEFAULT_INPUT_H}x{DEFAULT_INPUT_W}, "
+          f"obj_thr={DEFAULT_DECODER_CONFIG['OBJ_THRESHOLD']}, "
+          f"nms_thr={DEFAULT_DECODER_CONFIG['NMS_THRESHOLD']}")
 
 
 def npu_detect(args, orig):
+    npu_input, ref = letterbox_preprocess(orig, args.h, args.w)
+
+    args.instance.process([[npu_input]])
+    logits = args.instance.get_result()['buf']
+    detected_boxes = args.post.main(logits, ref)
+
+    if detected_boxes is None or len(detected_boxes) == 0:
+        return []
+
     orig_h, orig_w = orig.shape[:2]
-    sx = orig_w / args.w
-    sy = orig_h / args.h
-
-    resized = cv2.resize(orig, (args.w, args.h))
-    image = resized.reshape(-1, args.h, args.w, 3)
-
-    args.instance.process([[image]])
-    ret = args.instance.get_result()
-
-    detected_boxes = args.post.main(
-        ret['buf'].view(np.float32),
-        np.array([[0, 0, args.w - 1, args.h - 1]], dtype=np.float32)
-    )
-
     detections = []
     for box in detected_boxes:
         if len(box) < 6:
@@ -377,8 +437,10 @@ def npu_detect(args, orig):
             'class_id': class_id,
             'confidence': confidence,
             'box': [
-                int(x1 * sx), int(y1 * sy),
-                int(x2 * sx), int(y2 * sy),
+                max(0, min(orig_w - 1, int(round(x1)))),
+                max(0, min(orig_h - 1, int(round(y1)))),
+                max(0, min(orig_w - 1, int(round(x2)))),
+                max(0, min(orig_h - 1, int(round(y2)))),
             ],
         })
     return detections
@@ -443,6 +505,8 @@ def run_inference(args):
                 detections,
                 args.scaffold_class_ids,
                 conf_threshold=args.scaffold_conf_threshold,
+                scaffold_min_conf=args.scaffold_min_conf,
+                skip_hook_rule=args.skip_hook_rule,
             )
             status = "safe" if status_numeric == 1 else "unsafe"
             if status_numeric == 1:
