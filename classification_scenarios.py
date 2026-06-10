@@ -36,6 +36,15 @@ Example (worker counting eval):
       --output_dir ./Scenarios/Counting/predictions \
       --counting \
       --counting_conf_threshold 0.30
+
+Example (heavy machine safe/unsafe eval):
+  python classification_scenarios.py \
+      --model ./utils/object_detection_yolov9/req_files_ppr/may_20_cls_13_dpi_model_416x416x3_inv-f.tachyrt \
+      --safe_dir ./Scenarios/Heavy_Machine/safe \
+      --unsafe_dir ./Scenarios/Heavy_Machine/unsafe \
+      --output_dir ./Scenarios/Heavy_Machine/predictions \
+      --heavy_machine_classification \
+      --heavy_machine_conf_threshold 0.30
 """
 
 import os
@@ -80,6 +89,13 @@ from Classification_Counting import (
     compute_counting_metrics,
     print_counting_metrics,
 )
+
+_heavy_machine_dir = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'Scenarios', 'Heavy_Machine'
+)
+if _heavy_machine_dir not in sys.path:
+    sys.path.append(_heavy_machine_dir)
+from Classification_Heavy_Machine import detect_heavy_machine, resolve_heavy_machine_class_ids
 
 # Built-in defaults (same as infernce-may-28/inf_end_to_end.py inference())
 DEFAULT_INPUT_H = 416
@@ -207,6 +223,38 @@ def parse_arguments():
         help='GT count labels for --unsafe_dir images (default: ../labels if unsafe_dir ends with /images)',
     )
 
+    parser.add_argument(
+        '--heavy_machine_classification',
+        action='store_true',
+        help='Apply heavy machine safe/unsafe rules (helmet, signal man, proximity)',
+    )
+
+    parser.add_argument(
+        '--heavy_machine_conf_threshold',
+        type=float,
+        default=0.30,
+        help='Confidence gate for detections used in heavy machine rules (default: 0.30)',
+    )
+
+    parser.add_argument(
+        '--heavy_machine_danger_dist',
+        type=float,
+        default=2.0,
+        help='Proximity violation distance threshold in meters (default: 2.0)',
+    )
+
+    parser.add_argument(
+        '--heavy_machine_no_default_homography',
+        action='store_true',
+        help='Disable default ground-plane homography (proximity check skipped without SEG tag)',
+    )
+
+    parser.add_argument(
+        '--skip_signal_man_rule',
+        action='store_true',
+        help='Disable signal-man rule for heavy machine scenario',
+    )
+
     parser.add_argument('--upload_firmware', type=str, default='false',
                         help='Upload firmware when using spi interface (true/false)')
 
@@ -249,13 +297,16 @@ def parse_arguments():
         args.scaffold_classification,
         args.ppe_classification,
         args.counting,
+        args.heavy_machine_classification,
     ]
     if sum(scenario_flags) > 1:
-        print("Error: --scaffold_classification, --ppe_classification, and --counting are mutually exclusive.")
+        print("Error: scenario flags (--scaffold_classification, --ppe_classification, "
+              "--counting, --heavy_machine_classification) are mutually exclusive.")
         exit(1)
 
     if args.eval_mode and not any(scenario_flags):
-        print("Error: one of --scaffold_classification, --ppe_classification, or --counting is required with --safe_dir/--unsafe_dir.")
+        print("Error: a scenario flag is required with --safe_dir/--unsafe_dir "
+              "(scaffold, ppe, counting, or heavy_machine_classification).")
         exit(1)
 
     if args.scaffold_classification:
@@ -267,6 +318,14 @@ def parse_arguments():
     if args.ppe_classification:
         args.ppe_class_ids = resolve_ppe_class_ids(args.clss_dict)
         print(f"PPE class IDs: {args.ppe_class_ids}")
+
+    if args.heavy_machine_classification:
+        args.heavy_machine_class_ids = resolve_heavy_machine_class_ids(args.clss_dict)
+        print(f"Heavy machine class IDs: {args.heavy_machine_class_ids}")
+        if args.heavy_machine_no_default_homography:
+            print("Heavy machine homography: DISABLED (proximity may be skipped)")
+        if args.skip_signal_man_rule:
+            print("Signal-man rule: DISABLED (--skip_signal_man_rule)")
 
     if args.counting:
         args.counting_class_ids = resolve_counting_class_ids(args.clss_dict)
@@ -616,6 +675,8 @@ def run_inference(args):
         scenario = 'ppe'
     elif args.counting:
         scenario = 'counting'
+    elif args.heavy_machine_classification:
+        scenario = 'heavy_machine'
 
     if args.eval_mode:
         os.makedirs(os.path.join(args.output_dir, 'safe'), exist_ok=True)
@@ -687,6 +748,16 @@ def run_inference(args):
             )
             status_numeric = None
             reasons = None
+        elif args.heavy_machine_classification:
+            annotated, status_numeric, reasons = detect_heavy_machine(
+                orig,
+                detections,
+                args.heavy_machine_class_ids,
+                conf_threshold=args.heavy_machine_conf_threshold,
+                danger_dist_meters=args.heavy_machine_danger_dist,
+                use_default_homography=not args.heavy_machine_no_default_homography,
+                skip_signal_man_rule=args.skip_signal_man_rule,
+            )
         else:
             annotated = draw_detections(orig, detections, args.clss_dict)
             status_numeric = None
@@ -742,7 +813,8 @@ def run_inference(args):
         saved_count += 1
 
     if scenario and scenario_results:
-        results_path = os.path.join(args.output_dir, f'{scenario}_results.json')
+        results_name = 'heavy_machine' if scenario == 'heavy_machine' else scenario
+        results_path = os.path.join(args.output_dir, f'{results_name}_results.json')
         with open(results_path, 'w') as f:
             json.dump(scenario_results, f, indent=2)
         print(f"  {scenario.capitalize()} results: {results_path}")
