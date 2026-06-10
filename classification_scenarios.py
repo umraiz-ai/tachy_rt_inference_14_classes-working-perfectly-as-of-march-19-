@@ -27,6 +27,15 @@ Example (PPE safe/unsafe eval):
       --output_dir ./Scenarios/PPE/predictions \
       --ppe_classification \
       --ppe_conf_threshold 0.30
+
+Example (worker counting eval):
+  python classification_scenarios.py \
+      --model ./utils/object_detection_yolov9/req_files_ppr/may_20_cls_13_dpi_model_416x416x3_inv-f.tachyrt \
+      --safe_dir ./Scenarios/Counting/safe/images \
+      --unsafe_dir ./Scenarios/Counting/unsafe/images \
+      --output_dir ./Scenarios/Counting/predictions \
+      --counting \
+      --counting_conf_threshold 0.30
 """
 
 import os
@@ -59,6 +68,18 @@ _ppe_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Scenarios',
 if _ppe_dir not in sys.path:
     sys.path.append(_ppe_dir)
 from Classification_PPE import detect_ppe, resolve_ppe_class_ids
+
+_counting_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Scenarios', 'Counting')
+if _counting_dir not in sys.path:
+    sys.path.append(_counting_dir)
+from Classification_Counting import (
+    detect_worker_count,
+    resolve_counting_class_ids,
+    read_gt_count,
+    draw_count_badge,
+    compute_counting_metrics,
+    print_counting_metrics,
+)
 
 # Built-in defaults (same as infernce-may-28/inf_end_to_end.py inference())
 DEFAULT_INPUT_H = 416
@@ -159,6 +180,33 @@ def parse_arguments():
         help='Confidence gate for detections used in PPE rules (default: 0.30)',
     )
 
+    parser.add_argument(
+        '--counting',
+        action='store_true',
+        help='Count workers from NPU detections (eval uses label .txt files for GT counts)',
+    )
+
+    parser.add_argument(
+        '--counting_conf_threshold',
+        type=float,
+        default=0.30,
+        help='Confidence gate for worker detections used in counting (default: 0.30)',
+    )
+
+    parser.add_argument(
+        '--safe_labels_dir',
+        type=str,
+        default=None,
+        help='GT count labels for --safe_dir images (default: ../labels if safe_dir ends with /images)',
+    )
+
+    parser.add_argument(
+        '--unsafe_labels_dir',
+        type=str,
+        default=None,
+        help='GT count labels for --unsafe_dir images (default: ../labels if unsafe_dir ends with /images)',
+    )
+
     parser.add_argument('--upload_firmware', type=str, default='false',
                         help='Upload firmware when using spi interface (true/false)')
 
@@ -197,12 +245,17 @@ def parse_arguments():
 
     args.eval_mode = has_safe and has_unsafe
 
-    if args.scaffold_classification and args.ppe_classification:
-        print("Error: --scaffold_classification and --ppe_classification are mutually exclusive.")
+    scenario_flags = [
+        args.scaffold_classification,
+        args.ppe_classification,
+        args.counting,
+    ]
+    if sum(scenario_flags) > 1:
+        print("Error: --scaffold_classification, --ppe_classification, and --counting are mutually exclusive.")
         exit(1)
 
-    if args.eval_mode and not (args.scaffold_classification or args.ppe_classification):
-        print("Error: --scaffold_classification or --ppe_classification is required when using --safe_dir/--unsafe_dir.")
+    if args.eval_mode and not any(scenario_flags):
+        print("Error: one of --scaffold_classification, --ppe_classification, or --counting is required with --safe_dir/--unsafe_dir.")
         exit(1)
 
     if args.scaffold_classification:
@@ -215,10 +268,37 @@ def parse_arguments():
         args.ppe_class_ids = resolve_ppe_class_ids(args.clss_dict)
         print(f"PPE class IDs: {args.ppe_class_ids}")
 
+    if args.counting:
+        args.counting_class_ids = resolve_counting_class_ids(args.clss_dict)
+        print(f"Counting class IDs: {args.counting_class_ids}")
+        if args.eval_mode:
+            args.safe_labels_dir = resolve_labels_dir(args.safe_dir, args.safe_labels_dir)
+            args.unsafe_labels_dir = resolve_labels_dir(args.unsafe_dir, args.unsafe_labels_dir)
+            if not args.safe_labels_dir or not os.path.isdir(args.safe_labels_dir):
+                print(f"Error: safe labels directory not found (tried --safe_labels_dir or auto-detect near {args.safe_dir})")
+                exit(1)
+            if not args.unsafe_labels_dir or not os.path.isdir(args.unsafe_labels_dir):
+                print(f"Error: unsafe labels directory not found (tried --unsafe_labels_dir or auto-detect near {args.unsafe_dir})")
+                exit(1)
+            print(f"Counting label dirs: safe={args.safe_labels_dir}, unsafe={args.unsafe_labels_dir}")
+
     return args
 
 
-IMAGE_EXTENSIONS = ('*.jpg', '*.jpeg', '*.png', '*.JPG', '*.JPEG', '*.PNG')
+IMAGE_EXTENSIONS = ('*.jpg', '*.jpeg', '*.png', '*.JPG', '*.JPEG', '*.PNG', '*.bmp', '*.BMP', '*.webp', '*.WEBP')
+
+
+def resolve_labels_dir(image_dir, explicit_labels_dir=None):
+    """Resolve GT label directory for counting (sibling labels/ when image_dir is .../images)."""
+    if explicit_labels_dir:
+        return explicit_labels_dir
+    normalized = image_dir.rstrip(os.sep)
+    if os.path.basename(normalized) == 'images':
+        return os.path.join(os.path.dirname(normalized), 'labels')
+    candidate = os.path.join(normalized, 'labels')
+    if os.path.isdir(candidate):
+        return candidate
+    return None
 
 
 def collect_image_files(directory):
@@ -228,7 +308,32 @@ def collect_image_files(directory):
     return sorted(files)
 
 
+def build_counting_eval_jobs(args):
+    jobs = []
+    for split, img_dir, label_dir in (
+        ('safe', args.safe_dir, args.safe_labels_dir),
+        ('unsafe', args.unsafe_dir, args.unsafe_labels_dir),
+    ):
+        for path in collect_image_files(img_dir):
+            basename = os.path.basename(path)
+            try:
+                gt_count = read_gt_count(label_dir, basename)
+            except FileNotFoundError as e:
+                print(f"[WARN] {e} -> skipping")
+                continue
+            jobs.append({
+                'path': path,
+                'subdir': split,
+                'gt_label': split,
+                'gt_count': gt_count,
+            })
+    return jobs
+
+
 def build_image_jobs(args):
+    if args.eval_mode and args.counting:
+        return build_counting_eval_jobs(args)
+
     if args.eval_mode:
         jobs = []
         for path in collect_image_files(args.safe_dir):
@@ -238,7 +343,7 @@ def build_image_jobs(args):
         return jobs
 
     return [
-        {'path': path, 'gt': None, 'subdir': '', 'gt_label': None}
+        {'path': path, 'gt': None, 'subdir': '', 'gt_label': None, 'gt_count': None}
         for path in collect_image_files(args.test_dir)
     ]
 
@@ -509,13 +614,21 @@ def run_inference(args):
         scenario = 'scaffold'
     elif args.ppe_classification:
         scenario = 'ppe'
+    elif args.counting:
+        scenario = 'counting'
 
     if args.eval_mode:
         os.makedirs(os.path.join(args.output_dir, 'safe'), exist_ok=True)
         os.makedirs(os.path.join(args.output_dir, 'unsafe'), exist_ok=True)
-        mode = f"{scenario} eval (safe/unsafe)" if scenario else "eval (safe/unsafe)"
+        if scenario == 'counting':
+            mode = "counting eval"
+        else:
+            mode = f"{scenario} eval (safe/unsafe)" if scenario else "eval (safe/unsafe)"
     else:
-        mode = f"{scenario} classification" if scenario else "detection"
+        if scenario == 'counting':
+            mode = "counting"
+        else:
+            mode = f"{scenario} classification" if scenario else "detection"
 
     print(f"Processing {num_images} images ({mode})...")
     start_time = time.time()
@@ -524,8 +637,11 @@ def run_inference(args):
     scenario_results = []
     pred_safe_count = 0
     pred_unsafe_count = 0
+    total_skipped_workers = 0
     y_true = []
     y_pred = []
+    gt_counts = []
+    pred_counts = []
 
     for job in tqdm(image_jobs):
         image_file = job['path']
@@ -554,12 +670,47 @@ def run_inference(args):
                 args.ppe_class_ids,
                 conf_threshold=args.ppe_conf_threshold,
             )
+        elif args.counting:
+            annotated, worker_count, skipped_workers = detect_worker_count(
+                orig,
+                detections,
+                args.counting_class_ids,
+                conf_threshold=args.counting_conf_threshold,
+            )
+            total_skipped_workers += skipped_workers
+            gt_count = job.get('gt_count')
+            annotated = draw_count_badge(
+                annotated,
+                job['subdir'].upper() if job.get('subdir') else 'IMAGE',
+                gt_count,
+                worker_count,
+            )
+            status_numeric = None
+            reasons = None
         else:
             annotated = draw_detections(orig, detections, args.clss_dict)
             status_numeric = None
             reasons = None
 
-        if scenario:
+        if scenario == 'counting':
+            result_entry = {
+                'file': os.path.basename(image_file),
+                'pred_count': worker_count,
+                'skipped_workers': skipped_workers,
+            }
+            if args.eval_mode:
+                err = worker_count - job['gt_count']
+                result_entry.update({
+                    'subdir': job['subdir'],
+                    'split': job['gt_label'],
+                    'gt_count': job['gt_count'],
+                    'error': err,
+                    'correct': err == 0,
+                })
+                gt_counts.append(job['gt_count'])
+                pred_counts.append(worker_count)
+            scenario_results.append(result_entry)
+        elif scenario:
             status = "safe" if status_numeric == 1 else "unsafe"
             if status_numeric == 1:
                 pred_safe_count += 1
@@ -595,9 +746,19 @@ def run_inference(args):
         with open(results_path, 'w') as f:
             json.dump(scenario_results, f, indent=2)
         print(f"  {scenario.capitalize()} results: {results_path}")
-        print(f"  Predicted safe: {pred_safe_count}, Predicted unsafe: {pred_unsafe_count}")
+        if scenario == 'counting':
+            print(f"  Total workers skipped (too small): {total_skipped_workers}")
+        else:
+            print(f"  Predicted safe: {pred_safe_count}, Predicted unsafe: {pred_unsafe_count}")
 
-    if args.eval_mode and y_true:
+    if args.counting and args.eval_mode and gt_counts:
+        metrics = compute_counting_metrics(gt_counts, pred_counts)
+        metrics_path = os.path.join(args.output_dir, 'counting_metrics.json')
+        with open(metrics_path, 'w') as f:
+            json.dump(metrics, f, indent=2)
+        print_counting_metrics(metrics)
+        print(f"  Counting metrics: {metrics_path}")
+    elif args.eval_mode and y_true and not args.counting:
         metrics = compute_classification_metrics(y_true, y_pred)
         metrics_path = os.path.join(args.output_dir, 'classification_metrics.json')
         with open(metrics_path, 'w') as f:
