@@ -2,7 +2,7 @@
 # coding: utf-8
 
 """
-Run NPU object detection + optional scaffold safe/unsafe classification.
+Run NPU object detection + optional scenario safe/unsafe classification.
 
 Inference pipeline matches infernce-may-28/inf_end_to_end.py (letterbox, frame_split,
 utils.yolov9 Decoder with built-in config).
@@ -10,16 +10,23 @@ utils.yolov9 Decoder with built-in config).
 Example (single folder):
   python classification_scenarios.py --model ./model.tachyrt --test_dir ./images --output_dir ./out
 
-Example (safe/unsafe eval):
+Example (scaffold safe/unsafe eval):
+  python classification_scenarios.py \
+      --model ./utils/object_detection_yolov9/req_files_ppr/may_20_cls_13_dpi_model_416x416x3_inv-f.tachyrt \
+      --safe_dir ./Scenarios/scaffold/safe \
+      --unsafe_dir ./Scenarios/scaffold/unsafe \
+      --output_dir ./Scenarios/scaffold/predictions \
+      --scaffold_classification \
+      --skip_hook_rule
 
-This skips hook and checks helmet rule and vertical rule only.
-python classification_scenarios.py \
-    --model ./utils/object_detection_yolov9/req_files_ppr/may_20_cls_13_dpi_model_416x416x3_inv-f.tachyrt \
-    --safe_dir ./Scenarios/scaffold/safe \
-    --unsafe_dir ./Scenarios/scaffold/unsafe \
-    --output_dir ./Scenarios/scaffold/predictions \
-    --scaffold_classification \
-    --skip_hook_rule
+Example (PPE safe/unsafe eval):
+  python classification_scenarios.py \
+      --model /path/to/your_ppe_model.tachyrt \
+      --safe_dir /path/to/ppe/safe \
+      --unsafe_dir /path/to/ppe/unsafe \
+      --output_dir ./Scenarios/PPE/predictions \
+      --ppe_classification \
+      --ppe_conf_threshold 0.30
 """
 
 import os
@@ -47,6 +54,11 @@ _scaffold_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Scenar
 if _scaffold_dir not in sys.path:
     sys.path.append(_scaffold_dir)
 from scaffold_classification import detect_scaffold, resolve_scaffold_class_ids
+
+_ppe_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Scenarios', 'PPE')
+if _ppe_dir not in sys.path:
+    sys.path.append(_ppe_dir)
+from Classification_PPE import detect_ppe, resolve_ppe_class_ids
 
 # Built-in defaults (same as infernce-may-28/inf_end_to_end.py inference())
 DEFAULT_INPUT_H = 416
@@ -134,6 +146,19 @@ def parse_arguments():
         help='Disable hook fastening rule (helmet + vertical rules still apply)',
     )
 
+    parser.add_argument(
+        '--ppe_classification',
+        action='store_true',
+        help='Apply PPE helmet safe/unsafe rules on NPU detections',
+    )
+
+    parser.add_argument(
+        '--ppe_conf_threshold',
+        type=float,
+        default=0.30,
+        help='Confidence gate for detections used in PPE rules (default: 0.30)',
+    )
+
     parser.add_argument('--upload_firmware', type=str, default='false',
                         help='Upload firmware when using spi interface (true/false)')
 
@@ -172,15 +197,23 @@ def parse_arguments():
 
     args.eval_mode = has_safe and has_unsafe
 
-    if args.eval_mode and not args.scaffold_classification:
-        print("Error: --scaffold_classification is required when using --safe_dir/--unsafe_dir.")
+    if args.scaffold_classification and args.ppe_classification:
+        print("Error: --scaffold_classification and --ppe_classification are mutually exclusive.")
         exit(1)
 
-    if args.scaffold_classification or args.eval_mode:
+    if args.eval_mode and not (args.scaffold_classification or args.ppe_classification):
+        print("Error: --scaffold_classification or --ppe_classification is required when using --safe_dir/--unsafe_dir.")
+        exit(1)
+
+    if args.scaffold_classification:
         args.scaffold_class_ids = resolve_scaffold_class_ids(args.clss_dict)
         print(f"Scaffold class IDs: {args.scaffold_class_ids}")
         if args.skip_hook_rule:
             print("Hook rule: DISABLED (--skip_hook_rule)")
+
+    if args.ppe_classification:
+        args.ppe_class_ids = resolve_ppe_class_ids(args.clss_dict)
+        print(f"PPE class IDs: {args.ppe_class_ids}")
 
     return args
 
@@ -471,18 +504,24 @@ def run_inference(args):
             print(f"No images found in {args.test_dir}")
         return
 
+    scenario = None
+    if args.scaffold_classification:
+        scenario = 'scaffold'
+    elif args.ppe_classification:
+        scenario = 'ppe'
+
     if args.eval_mode:
         os.makedirs(os.path.join(args.output_dir, 'safe'), exist_ok=True)
         os.makedirs(os.path.join(args.output_dir, 'unsafe'), exist_ok=True)
-        mode = "scaffold eval (safe/unsafe)"
+        mode = f"{scenario} eval (safe/unsafe)" if scenario else "eval (safe/unsafe)"
     else:
-        mode = "scaffold classification" if args.scaffold_classification else "detection"
+        mode = f"{scenario} classification" if scenario else "detection"
 
     print(f"Processing {num_images} images ({mode})...")
     start_time = time.time()
     total_inference_time = 0
     saved_count = 0
-    scaffold_results = []
+    scenario_results = []
     pred_safe_count = 0
     pred_unsafe_count = 0
     y_true = []
@@ -508,6 +547,19 @@ def run_inference(args):
                 scaffold_min_conf=args.scaffold_min_conf,
                 skip_hook_rule=args.skip_hook_rule,
             )
+        elif args.ppe_classification:
+            annotated, status_numeric, reasons = detect_ppe(
+                orig,
+                detections,
+                args.ppe_class_ids,
+                conf_threshold=args.ppe_conf_threshold,
+            )
+        else:
+            annotated = draw_detections(orig, detections, args.clss_dict)
+            status_numeric = None
+            reasons = None
+
+        if scenario:
             status = "safe" if status_numeric == 1 else "unsafe"
             if status_numeric == 1:
                 pred_safe_count += 1
@@ -529,9 +581,7 @@ def run_inference(args):
                 })
                 y_true.append(job['gt'])
                 y_pred.append(status_numeric)
-            scaffold_results.append(result_entry)
-        else:
-            annotated = draw_detections(orig, detections, args.clss_dict)
+            scenario_results.append(result_entry)
 
         if job['subdir']:
             out_path = os.path.join(args.output_dir, job['subdir'], os.path.basename(image_file))
@@ -540,11 +590,11 @@ def run_inference(args):
         cv2.imwrite(out_path, annotated)
         saved_count += 1
 
-    if args.scaffold_classification and scaffold_results:
-        results_path = os.path.join(args.output_dir, 'scaffold_results.json')
+    if scenario and scenario_results:
+        results_path = os.path.join(args.output_dir, f'{scenario}_results.json')
         with open(results_path, 'w') as f:
-            json.dump(scaffold_results, f, indent=2)
-        print(f"  Scaffold results: {results_path}")
+            json.dump(scenario_results, f, indent=2)
+        print(f"  {scenario.capitalize()} results: {results_path}")
         print(f"  Predicted safe: {pred_safe_count}, Predicted unsafe: {pred_unsafe_count}")
 
     if args.eval_mode and y_true:
