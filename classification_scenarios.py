@@ -45,6 +45,15 @@ Example (heavy machine safe/unsafe eval):
       --output_dir ./Scenarios/Heavy_Machine/predictions \
       --heavy_machine_classification \
       --heavy_machine_conf_threshold 0.30
+
+Example (lifted load safe/unsafe eval):
+  python classification_scenarios.py \
+      --model ./utils/object_detection_yolov9/req_files_ppr/may_20_cls_13_dpi_model_416x416x3_inv-f.tachyrt \
+      --safe_dir ./Scenarios/Lifted_Load/safe \
+      --unsafe_dir ./Scenarios/Lifted_Load/unsafe \
+      --output_dir ./Scenarios/Lifted_Load/predictions \
+      --lifted_load_classification \
+      --lifted_load_conf_threshold 0.30
 """
 
 import os
@@ -96,6 +105,13 @@ _heavy_machine_dir = os.path.join(
 if _heavy_machine_dir not in sys.path:
     sys.path.append(_heavy_machine_dir)
 from Classification_Heavy_Machine import detect_heavy_machine, resolve_heavy_machine_class_ids
+
+_lifted_load_dir = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'Scenarios', 'Lifted_Load'
+)
+if _lifted_load_dir not in sys.path:
+    sys.path.append(_lifted_load_dir)
+from Classification_Lifted_Load import detect_lifted_load, resolve_lifted_load_class_ids
 
 # Built-in defaults (same as infernce-may-28/inf_end_to_end.py inference())
 DEFAULT_INPUT_H = 416
@@ -255,6 +271,31 @@ def parse_arguments():
         help='Disable signal-man rule for heavy machine scenario',
     )
 
+    parser.add_argument(
+        '--lifted_load_classification',
+        action='store_true',
+        help='Apply lifted load safe/unsafe rules (red helmet, helmets, danger zone)',
+    )
+
+    parser.add_argument(
+        '--lifted_load_conf_threshold',
+        type=float,
+        default=0.30,
+        help='Confidence gate for detections used in lifted load rules (default: 0.30)',
+    )
+
+    parser.add_argument(
+        '--skip_red_helmet_rule',
+        action='store_true',
+        help='Disable red-helmet (signaler) rule for lifted load scenario',
+    )
+
+    parser.add_argument(
+        '--lifted_load_require_helmet_everywhere',
+        action='store_true',
+        help='Require helmets on all workers when lifted load is present (default: lift area only)',
+    )
+
     parser.add_argument('--upload_firmware', type=str, default='false',
                         help='Upload firmware when using spi interface (true/false)')
 
@@ -298,15 +339,17 @@ def parse_arguments():
         args.ppe_classification,
         args.counting,
         args.heavy_machine_classification,
+        args.lifted_load_classification,
     ]
     if sum(scenario_flags) > 1:
         print("Error: scenario flags (--scaffold_classification, --ppe_classification, "
-              "--counting, --heavy_machine_classification) are mutually exclusive.")
+              "--counting, --heavy_machine_classification, --lifted_load_classification) "
+              "are mutually exclusive.")
         exit(1)
 
     if args.eval_mode and not any(scenario_flags):
         print("Error: a scenario flag is required with --safe_dir/--unsafe_dir "
-              "(scaffold, ppe, counting, or heavy_machine_classification).")
+              "(scaffold, ppe, counting, heavy_machine, or lifted_load_classification).")
         exit(1)
 
     if args.scaffold_classification:
@@ -326,6 +369,14 @@ def parse_arguments():
             print("Heavy machine homography: DISABLED (proximity may be skipped)")
         if args.skip_signal_man_rule:
             print("Signal-man rule: DISABLED (--skip_signal_man_rule)")
+
+    if args.lifted_load_classification:
+        args.lifted_load_class_ids = resolve_lifted_load_class_ids(args.clss_dict)
+        print(f"Lifted load class IDs: {args.lifted_load_class_ids}")
+        if args.skip_red_helmet_rule:
+            print("Red-helmet rule: DISABLED (--skip_red_helmet_rule)")
+        if args.lifted_load_require_helmet_everywhere:
+            print("Lifted load helmets: required on all workers when load present")
 
     if args.counting:
         args.counting_class_ids = resolve_counting_class_ids(args.clss_dict)
@@ -677,6 +728,8 @@ def run_inference(args):
         scenario = 'counting'
     elif args.heavy_machine_classification:
         scenario = 'heavy_machine'
+    elif args.lifted_load_classification:
+        scenario = 'lifted_load'
 
     if args.eval_mode:
         os.makedirs(os.path.join(args.output_dir, 'safe'), exist_ok=True)
@@ -758,6 +811,15 @@ def run_inference(args):
                 use_default_homography=not args.heavy_machine_no_default_homography,
                 skip_signal_man_rule=args.skip_signal_man_rule,
             )
+        elif args.lifted_load_classification:
+            annotated, status_numeric, reasons = detect_lifted_load(
+                orig,
+                detections,
+                args.lifted_load_class_ids,
+                conf_threshold=args.lifted_load_conf_threshold,
+                require_helmet_only_in_lift_area=not args.lifted_load_require_helmet_everywhere,
+                skip_red_helmet_rule=args.skip_red_helmet_rule,
+            )
         else:
             annotated = draw_detections(orig, detections, args.clss_dict)
             status_numeric = None
@@ -813,7 +875,7 @@ def run_inference(args):
         saved_count += 1
 
     if scenario and scenario_results:
-        results_name = 'heavy_machine' if scenario == 'heavy_machine' else scenario
+        results_name = scenario
         results_path = os.path.join(args.output_dir, f'{results_name}_results.json')
         with open(results_path, 'w') as f:
             json.dump(scenario_results, f, indent=2)
